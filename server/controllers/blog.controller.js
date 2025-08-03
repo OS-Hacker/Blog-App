@@ -6,15 +6,16 @@ import slugify from "slugify";
 
 // Configure storage
 // Ensure uploads directory exists
-const uploadsDir = path.join(process.cwd(), "uploads", "blogs-cover");
+
+// Update the upload configuration
+const uploadsDir = path.join(process.cwd(), "public", "uploads", "blogs-cover");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadsDir); // Use the absolute path
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -22,7 +23,23 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage: storage });
+export const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpe?g|png|gif/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images are allowed (jpeg, jpg, png, gif)'));
+  }
+});
+
 
 export const getBlogsController = async (req, res) => {
   try {
