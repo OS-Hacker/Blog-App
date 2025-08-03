@@ -91,8 +91,6 @@ const SingleBlog = () => {
 };
 
 export default SingleBlog;
-
-// Styled Components
 const BlogContainer = styled.article`
   max-width: 740px;
   margin: 0 auto;
@@ -102,37 +100,37 @@ const BlogContainer = styled.article`
 
   @media (max-width: 768px) {
     padding: 0 1rem 3rem;
+    margin-top: 3rem;
   }
 `;
 
 const BlogHeader = styled.header`
   margin: 3rem 0 2.5rem;
   text-align: center;
+
+  @media (max-width: 480px) {
+    margin: 2rem 0 1.5rem;
+  }
 `;
 
 const BlogTitle = styled.h1`
-  font-size: 2.75rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
   margin: 1rem 0 1.5rem;
   line-height: 1.2;
   font-weight: 800;
   color: #30343d;
   letter-spacing: -0.025em;
-
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 25px;
   }
 `;
 
 const BlogExcerpt = styled.p`
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: #4a5568;
   margin-bottom: 2rem;
   line-height: 1.5;
   font-weight: 400;
-
-  @media (max-width: 768px) {
-    font-size: 1.1rem;
-  }
 `;
 
 const AuthorContainer = styled.div`
@@ -140,6 +138,11 @@ const AuthorContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 1.5rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+  }
 `;
 
 const AvatarImage = styled.img`
@@ -150,10 +153,18 @@ const AvatarImage = styled.img`
   margin-right: 1rem;
   border: 2px solid #f7fafc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 480px) {
+    margin: 0 0 0.75rem;
+  }
 `;
 
 const AuthorInfo = styled.div`
   text-align: left;
+
+  @media (max-width: 480px) {
+    text-align: center;
+  }
 `;
 
 const AuthorName = styled.div`
@@ -170,31 +181,32 @@ const PublishDate = styled.div`
 const CategoryTag = styled.span`
   display: inline-block;
   color: white;
+  margin-top:22px;
   padding: 0.35rem 1rem;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.025em;
   text-transform: uppercase;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   background-color: ${({ category }) => {
     switch (category) {
       case "technology":
-        return "#4299e1"; // blue
+        return "#4299e1";
       case "travel":
-        return "#48bb78"; // green
+        return "#48bb78";
       case "food":
-        return "#ed8936"; // orange
+        return "#ed8936";
       case "lifestyle":
-        return "#9f7aea"; // purple
+        return "#9f7aea";
       case "business":
-        return "#f56565"; // red
+        return "#f56565";
       case "health":
-        return "#38b2ac"; // teal
+        return "#38b2ac";
       case "education":
-        return "#667eea"; // indigo
+        return "#667eea";
       default:
-        return "#a0aec0"; // gray for unknown categories
+        return "#a0aec0";
     }
   }};
 `;
@@ -213,6 +225,10 @@ const FeaturedImage = styled.img`
   display: block;
   object-fit: cover;
   max-height: 480px;
+
+  @media (max-width: 480px) {
+    max-height: 280px;
+  }
 `;
 
 const ImageCaption = styled.p`
@@ -225,7 +241,7 @@ const ImageCaption = styled.p`
 
 const BlogContent = styled.div`
   line-height: 1.8;
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
   color: #4a5568;
 
   p {
@@ -233,7 +249,7 @@ const BlogContent = styled.div`
   }
 
   h2 {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 3vw, 1.75rem);
     margin: 3rem 0 1.5rem;
     color: #1a202c;
     font-weight: 700;
@@ -241,7 +257,7 @@ const BlogContent = styled.div`
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: clamp(1.3rem, 2.5vw, 1.5rem);
     margin: 2.5rem 0 1.25rem;
     color: #2d3748;
     font-weight: 600;
@@ -303,18 +319,6 @@ const BlogContent = styled.div`
     font-size: 0.95rem;
     line-height: 1.5;
   }
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-
-    h2 {
-      font-size: 1.5rem;
-    }
-
-    h3 {
-      font-size: 1.3rem;
-    }
-  }
 `;
 
 const Divider = styled.div`
@@ -328,4 +332,9 @@ const NotFound = styled.div`
   padding: 6rem 0;
   font-size: 1.5rem;
   color: #718096;
+
+  @media (max-width: 480px) {
+    padding: 4rem 0;
+    font-size: 1.25rem;
+  }
 `;

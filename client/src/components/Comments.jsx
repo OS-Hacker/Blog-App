@@ -196,7 +196,7 @@ const Comments = () => {
           disabled={loading}
         />
         <CommentButton onClick={handleAddComment} disabled={loading}>
-          {loading ? "Posting..." : "Post Comment"}
+          {loading ? "Posting..." : "Comment"}
         </CommentButton>
       </CommentForm>
       <CommentsList>
@@ -222,13 +222,14 @@ const CommentsHeader = styled.h3`
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #e2e8f0;
+
 `;
 
 const CommentForm = styled.div`
   display: flex;
   gap: 0.5rem;
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;
 
 const CommentInput = styled.textarea`
@@ -266,16 +267,21 @@ const CommentButton = styled.button`
   &:hover {
     background-color: #ff9800;
   }
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+    bottom: -43px;
+  }
 `;
 
 const ReplayButton = styled.button`
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
   background-color: #ff9800;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  margin: 10px;
+  /* margin: 10px; */
   font-weight: 500;
   align-self: flex-start;
   transition: background-color 0.2s;
@@ -304,6 +310,9 @@ const CommentItem = styled.li`
 const CommentContent = styled.div`
   display: flex;
   gap: 1rem;
+  @media (max-width: 768px) {
+    margin-top: 30px;
+  }
 `;
 
 const Avatar = styled.div`
@@ -393,7 +402,7 @@ const ReplyForm = styled.div`
 `;
 
 const CancelButton = styled.button`
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
   background-color: #e2e8f0;
   color: #4a5568;
   border: none;

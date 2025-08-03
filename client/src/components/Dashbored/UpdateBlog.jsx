@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { baseUrl } from "../../pages/Signup";
@@ -26,15 +26,30 @@ const UpdateBlog = () => {
   const [errors, setErrors] = useState({});
 
   // Quill editor configuration
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "image"],
-      ["clean"],
-    ],
-  };
+  // Configure Quill modules
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ script: "sub" }, { script: "super" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ direction: "rtl" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        ["link", "image", "video"],
+        ["clean"],
+      ],
+      imageResize: {
+        parchment: ReactQuill.Quill.import("parchment"),
+        modules: ["Resize", "DisplaySize"],
+      },
+    }),
+    []
+  );
+
 
   const formats = [
     "header",
@@ -63,7 +78,7 @@ const UpdateBlog = () => {
           category: data.category,
           previewImage: data.coverImage,
         });
-        setBlogId(data._id)
+        setBlogId(data._id);
       } catch (error) {
         toast.error("Failed to load blog data");
         console.error(error);
@@ -290,6 +305,9 @@ const FormHeading = styled.h1`
   background-color: #151414 !important;
   text-align: center;
   font-weight: 700;
+  @media (max-width: 768px) {
+    margin-top: 10px;
+  }
 `;
 
 const FormDescription = styled.p`
@@ -297,6 +315,10 @@ const FormDescription = styled.p`
   color: #7f8c8d;
   background-color: #151414 !important;
   font-size: 1rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Form = styled.form`
@@ -478,7 +500,7 @@ const SubmitButton = styled.button`
   width: 100%;
   padding: 0.5rem;
   background: #ff9800;
-  margin-top: 4rem;
+  z-index: 1223;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -489,6 +511,7 @@ const SubmitButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  margin-top: 4rem;
 
   &:active {
     transform: scale(0.98);
@@ -497,6 +520,9 @@ const SubmitButton = styled.button`
   &:disabled {
     background: #bdc3c7;
     cursor: not-allowed;
+  }
+  @media (max-width: 768px) {
+    margin-top: 10rem;
   }
 `;
 

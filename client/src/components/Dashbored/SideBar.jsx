@@ -32,7 +32,7 @@ const SideBar = () => {
       label: "Articles",
       path: "/create-articles",
     },
-    { icon: <FileText size={20} />, label: "Comments", path: "/comments" },
+    { icon: <FileText size={20} />, label: "Comments", path: "/comments-page" },
     { icon: <BarChart2 size={20} />, label: "Analytics", path: "/analytics" },
     { icon: <Settings size={20} />, label: "Settings", path: "/settings" },
   ];

@@ -17,6 +17,9 @@ import Articles from "./components/Dashbored/Articles";
 import Layout from "./components/Dashbored/Layout";
 import AllUsersComments from "./components/Dashbored/AllUsersComments";
 import UpdateBlog from "./components/Dashbored/UpdateBlog";
+import Comments from "./pages/Comments";
+import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -39,6 +42,9 @@ const App = () => {
             <Route path="/edit-blog/:slug" element={<UpdateBlog />} />
             <Route path="/comments" element={<AllUsersComments />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/comments-page" element={<Comments />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
 

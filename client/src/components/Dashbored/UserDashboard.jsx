@@ -173,150 +173,182 @@ const UserDashboard = () => {
 
 export default UserDashboard;
 
-// Styled Components
 const DashboardContainer = styled.div`
   padding: 2rem;
   max-width: 1400px;
-  margin-top: 2.3rem;
+  margin: 4rem auto 2rem;
+  animation: fadeIn 0.6s ease-in-out;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const DataNotAvilable = styled.div`
   text-align: center;
   font-weight: 800;
   font-family: cursive;
-  h2 {
-    background: rgba(207, 198, 198, 0.1) !important;
-  }
+  margin-top: 3rem;
+
+  h2,
   h3 {
-    background: rgba(207, 198, 198, 0.1) !important;
+    padding: 0.5rem;
+    background: rgba(207, 198, 198, 0.1);
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: 1rem;
-
+  margin-bottom: 2rem;
   h1 {
-    font-size: 2rem;
-    font-weight: 600;
+    font-size: 2.2rem;
+    font-weight: 700;
     color: #1e293b;
-    /* margin-bottom: 0.5rem; */
   }
 
   p {
     color: #64748b;
+    font-size: 1rem;
+    margin-top: 0.25rem;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 `;
 
 const StatCard = styled.div`
-  background: rgba(207, 198, 198, 0.1);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
+  background: rgba(207, 198, 198, 0.08);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1rem;
   display: flex;
   align-items: center;
-  transition: transform 0.2s;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.06);
   }
 `;
 
 const StatIcon = styled.div`
   color: white;
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1rem;
 `;
 
 const StatContent = styled.div`
   h3 {
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-    background: rgba(207, 198, 198, 0.1) !important;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin-bottom: 0.2rem;
   }
 `;
 
 const StatValue = styled.div`
-  font-size: 1.5rem;
-  font-weight: 600;
-  background: rgba(207, 198, 198, 0.1) !important;
-  text-align: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #facc15;
 `;
 
 const TableContainer = styled.div`
-  background: rgba(207, 198, 198, 0.1);
-  border-radius: 0.5rem;
+  background: rgba(207, 198, 198, 0.08);
+  border-radius: 0.75rem;
   padding: 1.5rem;
-  margin-top: 2rem;
-  height: 100%;
+  overflow-x: auto;
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  min-width: 768px;
+
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const TableRow = styled.tr`
+  transition: background 0.2s ease;
+
   ${(props) =>
     props.header
-      ? `
-    background: rgba(207, 198, 198, 0.1);
-  `
-      : `
-    &:hover {
-      background: rgba(207, 198, 198, 0.1);
-    }
-  `}
+      ? `background: rgba(207, 198, 198, 0.08);`
+      : `&:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }`}
 `;
 
 const TableHeaderCell = styled.th`
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #1e293b;
-  border-bottom: 1px solid #e2e8f0;
+  color: #fefce8;
+  border-bottom: 1px solid #334155;
 `;
 
 const TableCell = styled.td`
   padding: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  color: #f1f5f9;
+  border-bottom: 1px solid #334155;
 `;
 
 const CategoryTag = styled.span`
-  color: #1e293b;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.35rem 0.65rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: white;
+  border-radius: 0.25rem;
   background-color: ${({ category }) => {
     switch (category) {
       case "technology":
-        return "#4299e1"; // blue
+        return "#3b82f6";
       case "travel":
-        return "#48bb78"; // green
+        return "#10b981";
       case "food":
-        return "#ed8936"; // orange
+        return "#f97316";
       case "lifestyle":
-        return "#9f7aea"; // purple
+        return "#8b5cf6";
       case "business":
-        return "#f56565"; // red
+        return "#ef4444";
       case "health":
-        return "#38b2ac"; // teal
+        return "#14b8a6";
       case "education":
-        return "#667eea"; // indigo
+        return "#6366f1";
       default:
-        return "#a0aec0"; // gray for unknown categories
+        return "#6b7280";
     }
   }};
 `;
@@ -325,23 +357,27 @@ const StatWithIcon = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  svg {
+    stroke: #facc15;
+  }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
 `;
 
 const EditButton = styled.button`
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.35rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  transition: background 0.3s;
 
   &:hover {
     background: #2563eb;
@@ -352,12 +388,12 @@ const DeleteButton = styled.button`
   background: #ef4444;
   color: white;
   border: none;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.35rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  transition: background 0.3s;
 
   &:hover {
     background: #dc2626;
