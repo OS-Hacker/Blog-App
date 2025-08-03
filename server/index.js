@@ -1,11 +1,11 @@
 import express from "express";
-import ConnectDB from "./db/ConnectDB.js";
 import blogRouter from "./routes/blogs.routes.js";
 import userRouter from "./routes/user.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +14,6 @@ const app = express();
 
 // config dotenv
 dotenv.config();
-
-// connect database
-ConnectDB();
 
 // CORS configuration
 const corsOptions = {
@@ -28,6 +25,19 @@ const corsOptions = {
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
+
+// connect database
+// Replace the simple mongoose.connect with this robust version
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+})
+.then(() => console.log('✅ MongoDB connected successfully'))
+.catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1); // Exit process with failure
+});
 
 // Handle preflight requests
 app.options("*", cors(corsOptions)); // Important for PUT, DELETE, etc.
@@ -45,7 +55,6 @@ app.use("/uploads", express.static(path.join("uploads")));
 // server running
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
-
 
 // Deployment setup
 if (process.env.isDeployMode === "PRODUCTION") {
