@@ -57,12 +57,8 @@ app.listen(port, () => console.log(`Server is running on port ${port}`));
 // Deployment setup
 // Production configuration
 if (process.env.isDeployMode === "PRODUCTION") {
-  // Serve frontend from the correct path
-  const frontendPath = path.join(__dirname, "../../client/dist");
-  app.use(express.static(frontendPath));
-
-  // Handle SPA routing
+  app.use(express.static(path.join(__dirname, "../client/dist")));
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
   });
 }
