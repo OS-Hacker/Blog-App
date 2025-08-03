@@ -2,8 +2,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authProvider";
-
+import { useAuth } from "../../context/authProvider";
 export const baseUrl = "http://localhost:8080";
 
 const Signup = () => {
