@@ -51,16 +51,27 @@ const Wrapper = styled.div`
   background-repeat: no-repeat;
   position: relative;
   animation: ${bgZoom} 20s ease-in-out infinite alternate;
-
   .overlay {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(10, 10, 10, 0.6);
-    backdrop-filter: blur(3px);
+    position: fixed; /* or absolute if inside a positioned container */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(
+      10,
+      10,
+      10,
+      0.5
+    ); /* More transparent (0.5 opacity) */
+    backdrop-filter: blur(12px); /* Slightly stronger blur */
+    -webkit-backdrop-filter: blur(12px); /* For Safari support */
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1rem;
+    z-index: 1000; /* Ensure it's above other content */
+    border: none;
+    margin: 0;
   }
 
   .container {
