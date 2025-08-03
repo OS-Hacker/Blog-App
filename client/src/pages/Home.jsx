@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import blogImage from "/images/blog.webp";
-import { useAuth } from "../context/authProvider";
+import { useAuth } from "../../context/authProvider";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {

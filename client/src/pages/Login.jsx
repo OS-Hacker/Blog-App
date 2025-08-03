@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useAuth } from "../context/authProvider";
+import { useAuth } from "../../context/authProvider";
+
 
 const Login = () => {
   const { auth, login } = useAuth();
