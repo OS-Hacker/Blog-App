@@ -6,7 +6,7 @@ import Loading from "../pages/Loading";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaHeart, FaRegHeart } from "react-icons/fa";
 import { formatCreatedAt } from "./formatCreatedAt";
-import { useAuth } from "../context/authProvider";
+import { useAuth } from "../context/AuthProvider";
 import { toast } from "react-toastify";
 
 /**
@@ -96,7 +96,7 @@ const Blogs = () => {
             slug,
           } = blog;
 
-          console.log(coverImage)
+          console.log(coverImage);
 
           // Get like data from state or fallback to blog defaults
           const likeData = likedBlogs[_id] || {};

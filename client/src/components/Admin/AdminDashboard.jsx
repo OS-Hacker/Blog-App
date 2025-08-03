@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlusCircle, FaBookOpen } from "react-icons/fa";
 import styled from "styled-components";
-import { useAuth } from "../../context/authProvider";
+import { useAuth } from "../context/AuthProvider";
+
 
 const AdminDashboard = () => {
   const { auth } = useAuth();

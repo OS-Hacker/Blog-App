@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../context/authProvider";
+import { useAuth } from "../context/AuthProvider";
 import Loading from "../pages/Loading";
 
 const UserProtectedRoute = () => {
