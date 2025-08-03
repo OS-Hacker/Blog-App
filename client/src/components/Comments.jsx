@@ -5,7 +5,7 @@ import axios from "axios";
 import { baseUrl } from "../pages/Signup";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatCreatedAt } from "./formatCreatedAt";
-import { useAuth } from "../context/authProvider";
+import { useAuth } from "../context/AuthProvider";
 import { toast } from "react-toastify";
 
 const Comments = () => {
