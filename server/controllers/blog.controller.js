@@ -4,11 +4,8 @@ import fs from "fs";
 import path from "path";
 import slugify from "slugify";
 
-// Configure storage
-// Ensure uploads directory exists
-
 // Update the upload configuration
-const uploadsDir = path.join(process.cwd(), "public", "uploads", "blogs-cover");
+const uploadsDir = path.join(process.cwd(), "uploads", "blogs-cover");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
