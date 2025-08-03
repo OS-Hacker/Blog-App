@@ -1,7 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import styled from "styled-components";
 import { useState } from "react";
-import { useAuth } from "../../context/authProvider";
+import { useAuth } from "../context/AuthProvider";
 import { baseUrl } from "./Signup";
 
 const Navbar = () => {

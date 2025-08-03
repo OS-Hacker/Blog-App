@@ -1,7 +1,8 @@
+import { useAuth } from "../context/AuthProvider";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useAuth } from "../../context/authProvider";
+
 
 
 const Login = () => {
