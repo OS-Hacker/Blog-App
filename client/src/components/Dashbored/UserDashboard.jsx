@@ -147,8 +147,8 @@ const UserDashboard = () => {
                     </StatWithIcon>
                   </TableCell>
                   <TableCell>
-                    <ActionButtons onClick={() => handleEdit(article.slug)}>
-                      <EditButton>
+                    <ActionButtons>
+                      <EditButton onClick={() => handleEdit(article.slug)}>
                         <Edit size={16} />
                       </EditButton>
                       <DeleteButton onClick={() => handleDelete(article._id)}>

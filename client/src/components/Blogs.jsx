@@ -75,6 +75,7 @@ const Blogs = () => {
   // Get current user ID from auth context
   const currentUserId = auth?._id;
 
+
   // Main render
   return (
     <CardGrid>
@@ -96,7 +97,7 @@ const Blogs = () => {
             slug,
           } = blog;
 
-          console.log(coverImage);
+          console.log(baseUrl);
 
           // Get like data from state or fallback to blog defaults
           const likeData = likedBlogs[_id] || {};

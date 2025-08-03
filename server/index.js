@@ -16,19 +16,18 @@ const app = express();
 dotenv.config();
 
 // CORS configuration
-const corsOptions = {
-  origin: "http://localhost:5173",
-  credentials: true, // This is REQUIRED for cookies/auth
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-};
+// const corsOptions = {
+//   origin: "https://blog-app-cpxu.onrender.com",
+//   credentials: true, // This is REQUIRED for cookies/auth
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+// };
 
 // Apply CORS middleware
-app.use(cors(corsOptions));
+app.use(cors());
 
 // connect database
 // Replace the simple mongoose.connect with this robust version
-console.log(process.env.MONGODB_URI);
 mongoose
   .connect(process.env.MONGODB_URI, {})
   .then(() => console.log("✅ MongoDB connected successfully"))
@@ -36,9 +35,6 @@ mongoose
     console.error("❌ MongoDB connection error:", err);
     process.exit(1); // Exit process with failure
   });
-
-// Handle preflight requests
-app.options("*", cors(corsOptions)); // Important for PUT, DELETE, etc.
 
 // Other middleware
 app.use(express.json());
@@ -48,7 +44,8 @@ app.use(cookieParser());
 app.use(userRouter);
 app.use(blogRouter);
 app.use(commentRouter);
-app.use("/uploads", express.static(path.join("uploads")));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // server running
 const port = process.env.PORT || 5000;

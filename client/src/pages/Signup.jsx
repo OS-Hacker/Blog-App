@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
-export const baseUrl = "https://blog-app-cpxu.onrender.com";
 
+export const baseUrl = "https://blog-app-cpxu.onrender.com";
 const Signup = () => {
   const { auth, signup } = useAuth();
 

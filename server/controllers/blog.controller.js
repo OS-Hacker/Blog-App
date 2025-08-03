@@ -102,8 +102,6 @@ export const createBlogController = async (req, res, next) => {
       return res.status(400).json({ message: "cover-images is required" });
     }
 
-    console.log(req.file);
-
     // 2. Handle image upload with Multer
     let coverImagePath = "";
     if (req.file) {
