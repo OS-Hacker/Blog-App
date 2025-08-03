@@ -5,18 +5,12 @@ import path from "path";
 import slugify from "slugify";
 
 // Update the upload configuration
-const uploadsDir = path.join(process.cwd(), "uploads", "blogs-cover");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadsDir);
+    cb(null, "uploads/blogs-cover");
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    cb(null, Date.now() + file.originalname);
   },
 });
 

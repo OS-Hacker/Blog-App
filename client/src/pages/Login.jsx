@@ -81,7 +81,13 @@ const Login = () => {
         </FormGroup>
 
         <SubmitButton type="submit" disabled={isLoading}>
-          {isLoading ? "Loading..." : "Login"}
+          {isLoading ? (
+            <>
+              <Spinner /> Loading...
+            </>
+          ) : (
+            "Login"
+          )}
         </SubmitButton>
 
         <LoginLink>
@@ -93,31 +99,6 @@ const Login = () => {
 };
 
 export default Login;
-
-// Update your styled components (only the changed ones)
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 0.6rem;
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
-  position: relative;
-
-  &:hover {
-    background: #e68a00;
-  }
-
-  &:disabled {
-    background: #ffcc80;
-    cursor: not-allowed;
-  }
-`;
-
 
 // Styled Components
 const FormContainer = styled.div`
@@ -182,6 +163,61 @@ const Error = styled.span`
 
 const LoginLink = styled.div`
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   color: #666;
+  font-size: 0.95rem;
+
+  a {
+    color: #1890ff;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+
+const Spinner = styled.div`
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 0.6rem;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    background: #ffcc80;
+    cursor: not-allowed;
+  }
 `;
