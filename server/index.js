@@ -55,12 +55,14 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 // Deployment setup
+// Production configuration
 if (process.env.isDeployMode === "PRODUCTION") {
-  // Serve static files from the frontend build folder
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Serve frontend from the correct path
+  const frontendPath = path.join(__dirname, "../../client/dist");
+  app.use(express.static(frontendPath));
 
-  // All other routes should redirect to the frontend's index.html
+  // Handle SPA routing
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
