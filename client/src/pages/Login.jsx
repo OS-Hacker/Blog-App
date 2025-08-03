@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-
-
 const Login = () => {
   const { auth, login } = useAuth();
 
@@ -14,6 +12,7 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,8 +35,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      const { email, password } = formData;
-      await login(email, password);
+      setIsLoading(true); // Set loading to true when submitting
+      try {
+        const { email, password } = formData;
+        await login(email, password);
+      } catch (error) {
+        // Handle error if needed
+        console.error("Login error:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false when done
+      }
     }
   };
 
@@ -73,7 +80,9 @@ const Login = () => {
           {errors.password && <Error>{errors.password}</Error>}
         </FormGroup>
 
-        <SubmitButton type="submit">Login</SubmitButton>
+        <SubmitButton type="submit" disabled={isLoading}>
+          {isLoading ? "Loading..." : "Login"}
+        </SubmitButton>
 
         <LoginLink>
           Don't have an account? <Link to="/Signup">SignUp</Link>
@@ -84,6 +93,31 @@ const Login = () => {
 };
 
 export default Login;
+
+// Update your styled components (only the changed ones)
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 0.6rem;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+  position: relative;
+
+  &:hover {
+    background: #e68a00;
+  }
+
+  &:disabled {
+    background: #ffcc80;
+    cursor: not-allowed;
+  }
+`;
+
 
 // Styled Components
 const FormContainer = styled.div`
@@ -145,22 +179,6 @@ const Error = styled.span`
   display: block;
 `;
 
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 0.6rem;
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
-
-  &:hover {
-    background: #ff9800;
-  }
-`;
 
 const LoginLink = styled.div`
   text-align: center;

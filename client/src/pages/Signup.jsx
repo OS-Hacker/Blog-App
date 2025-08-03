@@ -17,6 +17,7 @@ const Signup = () => {
 
   const [preview, setPreview] = useState(null);
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
   const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
@@ -24,7 +25,9 @@ const Signup = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // remove error while fill input
-    setErrors((prev) => ({ ...prev, [errors]: "" }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleAvatarChange = (e) => {
@@ -80,15 +83,23 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      const submitData = new FormData();
-      submitData.append("userName", formData.userName);
-      submitData.append("email", formData.email);
-      submitData.append("password", formData.password);
-      if (formData.avatar) {
-        submitData.append("avatar", formData.avatar);
-      }
+      setIsLoading(true); // Set loading to true when submitting
+      try {
+        const submitData = new FormData();
+        submitData.append("userName", formData.userName);
+        submitData.append("email", formData.email);
+        submitData.append("password", formData.password);
+        if (formData.avatar) {
+          submitData.append("avatar", formData.avatar);
+        }
 
-      await signup(submitData);
+        await signup(submitData);
+      } catch (error) {
+        console.error("Signup error:", error);
+        // You might want to set errors here if the API returns validation errors
+      } finally {
+        setIsLoading(false); // Set loading to false when done
+      }
     }
   };
 
@@ -129,6 +140,7 @@ const Signup = () => {
             onChange={handleChange}
             $hasError={!!errors.username}
             placeholder="Enter your username"
+            disabled={isLoading}
           />
           {errors.username && <Error>{errors.username}</Error>}
         </FormGroup>
@@ -143,6 +155,7 @@ const Signup = () => {
             onChange={handleChange}
             $hasError={!!errors.email}
             placeholder="Enter your email"
+            disabled={isLoading}
           />
           {errors.email && <Error>{errors.email}</Error>}
         </FormGroup>
@@ -157,11 +170,20 @@ const Signup = () => {
             onChange={handleChange}
             $hasError={!!errors.password}
             placeholder="Enter your password"
+            disabled={isLoading}
           />
           {errors.password && <Error>{errors.password}</Error>}
         </FormGroup>
 
-        <SubmitButton type="submit">Register</SubmitButton>
+        <SubmitButton type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Spinner /> Registering...
+            </>
+          ) : (
+            "Register"
+          )}
+        </SubmitButton>
 
         <LoginLink>
           Already have an account? <Link to="/login">Login</Link>
@@ -187,8 +209,6 @@ const Form = styled.form`
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 `;
-
-
 
 const AvatarContainer = styled.div`
   display: flex;
@@ -270,6 +290,11 @@ const Input = styled.input`
       ${(props) =>
         props.$hasError ? "rgba(255, 77, 79, 0.1)" : "rgba(24, 144, 255, 0.1)"};
   }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
 `;
 
 const Error = styled.span`
@@ -291,9 +316,34 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: all 0.3s;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.98);
+  }
+
+  &:disabled {
+    background: #ffcc80;
+    cursor: not-allowed;
+  }
+`;
+
+const Spinner = styled.div`
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 
