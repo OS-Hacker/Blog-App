@@ -1,5 +1,5 @@
 import express from "express";
-import connectDB from "./db/connectDb.js";
+import ConnectDB from "./db/ConnectDB.js";
 import blogRouter from "./routes/blogs.routes.js";
 import userRouter from "./routes/user.routes.js";
 import commentRouter from "./routes/comment.routes.js";
@@ -16,7 +16,7 @@ const app = express();
 dotenv.config();
 
 // connect database
-connectDB();
+ConnectDB();
 
 // CORS configuration
 const corsOptions = {
