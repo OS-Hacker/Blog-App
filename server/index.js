@@ -28,16 +28,14 @@ app.use(cors(corsOptions));
 
 // connect database
 // Replace the simple mongoose.connect with this robust version
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-  process.exit(1); // Exit process with failure
-});
+console.log(process.env.MONGODB_URI);
+mongoose
+  .connect(process.env.MONGODB_URI, {})
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // Exit process with failure
+  });
 
 // Handle preflight requests
 app.options("*", cors(corsOptions)); // Important for PUT, DELETE, etc.
