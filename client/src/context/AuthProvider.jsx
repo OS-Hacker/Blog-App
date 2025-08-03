@@ -15,7 +15,7 @@ axios.defaults.withCredentials = true;
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -95,5 +95,7 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;
 
 export const useAuth = () => useContext(AuthContext);
