@@ -59,7 +59,7 @@ export const signUpController = async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.isDeployMode === "PRODUCTION",
         sameSite: "Strict",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
@@ -99,7 +99,7 @@ export const loginController = async (req, res, next) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // use HTTPS in production
+        secure: process.env.isDeployMode === "PRODUCTION", // use HTTPS in PRODUCTION
         sameSite: "Strict", // or "Lax" depending on your use case
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
@@ -122,7 +122,7 @@ export const logoutUser = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "Strict",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.isDeployMode === "PRODUCTION",
   });
   res.status(200).json({ message: "Logged out successfully" });
 };

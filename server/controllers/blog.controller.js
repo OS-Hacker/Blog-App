@@ -5,12 +5,20 @@ import path from "path";
 import slugify from "slugify";
 
 // Configure storage
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), "uploads", "blogs-cover");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/blogs-cover");
+    cb(null, uploadsDir); // Use the absolute path
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + file.originalname);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
