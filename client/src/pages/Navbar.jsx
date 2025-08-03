@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useAuth } from "../context/authProvider";
 import { baseUrl } from "./Signup";
+import blogLogo from "/images/BlogLogo.png";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,9 +42,9 @@ const Navbar = () => {
     <Wrapper>
       <nav>
         <div className="container">
-          <Link to="/" className="logo">
-            Blogs
-          </Link>
+          {/* <Link to="/"> */}
+            <img src={blogLogo} alt="logo" className="logo" />
+          {/* </Link> */}
 
           <div
             className={`hamburger ${isMenuOpen ? "open" : ""}`}
@@ -100,12 +101,8 @@ const Wrapper = styled.section`
   }
 
   .logo {
-    font-family: cursive;
-    font-size: 1.7rem;
-    color: #ff9800;
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: transform 0.3s ease;
+    width: 200px;
+    height: 50px;
   }
 
   .logo:hover {

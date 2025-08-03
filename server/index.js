@@ -6,11 +6,14 @@ import commentRouter from "./routes/comment.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const app = express();
+
+// config dotenv
+dotenv.config();
 
 // connect database
 connectDB();
@@ -40,14 +43,12 @@ app.use(commentRouter);
 app.use("/uploads", express.static(path.join("uploads")));
 
 // server running
-const port = 8080;
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 
-const isDeployMode = true
-
 // Deployment setup
-if (isDeployMode) {
+if (process.env.isDeployMode === "PRODUCTION") {
   // Serve static files from the frontend build folder
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
