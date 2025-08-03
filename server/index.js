@@ -63,6 +63,6 @@ if (process.env.isDeployMode === "PRODUCTION") {
 
   // Handle SPA routing
   app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
   });
 }
