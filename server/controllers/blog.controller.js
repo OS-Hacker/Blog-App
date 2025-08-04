@@ -6,44 +6,39 @@ import slugify from "slugify";
 import { User } from "../models/user.model.js";
 
 
-// Update the upload configuration
+// Ensure upload directory exists
+const uploadDir = path.join(process.cwd(), "public", "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-// Update the upload configuration
+// Multer storage configuration
 const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    try {
-      // Create directory if it doesn't exist (recursive: true creates parent directories too)
-      await fs.mkdir(uploadDir, { recursive: true });
-      cb(null, uploadDir);
-    } catch (err) {
-      cb(err);
-    }
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Use the verified upload directory
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, "-");
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '-');
     cb(null, `${uniqueSuffix}-${sanitizedName}`);
   },
 });
 
+// Multer middleware
 export const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     const validTypes = /jpe?g|png|gif/;
     const isValidMime = validTypes.test(file.mimetype);
-    const isValidExt = validTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-
+    const isValidExt = validTypes.test(path.extname(file.originalname).toLowerCase());
+    
     if (isValidMime && isValidExt) {
       return cb(null, true);
     }
-    cb(new Error("Only images (jpeg, jpg, png, gif) are allowed"));
-  },
-}).single("coverImage"); // Ensure this matches your form field name
+    cb(new Error('Only images (jpeg, jpg, png, gif) are allowed'));
+  }
+}).single('coverImage')
 
 
 export const getBlogsController = async (req, res) => {
