@@ -3,6 +3,8 @@ import { Blog } from "../models/blog.model.js";
 import fs from "fs";
 import path from "path"; // Add this import
 import slugify from "slugify";
+import { User } from "../models/user.model.js";
+
 
 // Update the upload configuration
 const storage = multer.diskStorage({
@@ -109,7 +111,7 @@ export const createBlogController = async (req, res, next) => {
     const { title, content, category } = req.body;
     const author = req.user.id; // From auth middleware
 
-    console.log(req.user);
+
 
     // 1. Validation
     if (!title || !content || !category) {
@@ -120,14 +122,7 @@ export const createBlogController = async (req, res, next) => {
       return res.status(400).json({ message: "cover-images is required" });
     }
 
-    // Verify file was saved
-    try {
-      await fs.promises.access(req.file.path);
-      console.log("File saved at:", req.file.path);
-    } catch (err) {
-      console.error("File save failed:", err);
-      return res.status(500).json({ message: "Failed to save cover image" });
-    }
+
 
     // 2. Handle image upload with Multer
     let coverImagePath = "";
