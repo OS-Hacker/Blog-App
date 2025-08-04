@@ -158,7 +158,7 @@ const Blogs = () => {
                     <AvatarImage
                       src={
                         author?.avatar
-                          ? `${baseUrl}${author.avatar}`
+                          ? `${author.avatar.url}`
                           : "/default-avatar.png"
                       }
                       alt={author?.userName || "Anonymous"}
