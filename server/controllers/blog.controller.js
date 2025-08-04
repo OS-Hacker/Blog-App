@@ -9,57 +9,56 @@ const __dirname = path.dirname(__filename);
 
 console.log(__dirname); // C:\Users\os363\OneDrive\Desktop\Crud Oprations\server
 
-const createUploadsDirectory = () => {
-  const uploadsDir = path.join(__dirname, "/public/uploads");
-  const blogsCoverDir = path.join(uploadsDir, "blogs-cover");
-
-  // Create directories if they don't exist
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-  if (!fs.existsSync(blogsCoverDir)) {
-    fs.mkdirSync(blogsCoverDir, { recursive: true });
+// Improved directory initialization
+const initializeUploads = () => {
+  try {
+    const basePath = path.join(__dirname, '../public/uploads/blogs-cover');
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(basePath)) {
+      fs.mkdirSync(basePath, { recursive: true });
+      console.log('Created upload directory:', basePath);
+    }
+    
+    // Verify write permissions
+    fs.accessSync(basePath, fs.constants.W_OK);
+    console.log('Verified write permissions');
+    
+    return basePath;
+  } catch (error) {
+    console.error('Failed to initialize upload directory:', error);
+    process.exit(1); // Exit if we can't create directory
   }
 };
 
-// Call this function when your server starts
-createUploadsDirectory();
+const uploadBasePath = initializeUploads();
 
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Ensure directory exists before saving
-    const destPath = path.join(__dirname, "/public/uploads/blogs-cover");
-    if (!fs.existsSync(destPath)) {
-      fs.mkdirSync(destPath, { recursive: true });
-    }
-    cb(null, destPath);
+    cb(null, uploadBasePath); // Use the pre-verified path
   },
   filename: (req, file, cb) => {
-    // Improved filename with date prefix and original name
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '-');
+    cb(null, `${uniqueSuffix}-${sanitizedName}`);
   },
 });
 
 export const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
-    const filetypes = /jpe?g|png|gif/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-
-    if (mimetype && extname) {
+    const validTypes = /jpe?g|png|gif/;
+    const isValidMime = validTypes.test(file.mimetype);
+    const isValidExt = validTypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (isValidMime && isValidExt) {
       return cb(null, true);
     }
-    cb(new Error("Only images are allowed (jpeg, jpg, png, gif)"));
-  },
-});
+    cb(new Error('Only images (jpeg, jpg, png, gif) are allowed'));
+  }
+}).single('coverImage'); // Ensure this matches your form field name
 
 
 export const getBlogsController = async (req, res) => {
@@ -146,6 +145,15 @@ export const createBlogController = async (req, res, next) => {
 
     if (!req.file) {
       return res.status(400).json({ message: "cover-images is required" });
+    }
+
+    // Verify file was saved
+    try {
+      await fs.promises.access(req.file.path);
+      console.log("File saved at:", req.file.path);
+    } catch (err) {
+      console.error("File save failed:", err);
+      return res.status(500).json({ message: "Failed to save cover image" });
     }
 
     // 2. Handle image upload with Multer
