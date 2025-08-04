@@ -7,8 +7,10 @@ import { fileURLToPath } from "url"; // Add this import
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+console.log(__dirname); // C:\Users\os363\OneDrive\Desktop\Crud Oprations\server
+
 const createUploadsDirectory = () => {
-  const uploadsDir = path.join(__dirname, "../public/uploads");
+  const uploadsDir = path.join(__dirname, "/public/uploads");
   const blogsCoverDir = path.join(uploadsDir, "blogs-cover");
 
   // Create directories if they don't exist
@@ -22,6 +24,8 @@ const createUploadsDirectory = () => {
 
 // Call this function when your server starts
 createUploadsDirectory();
+
+
 
 // Update the upload configuration
 const storage = multer.diskStorage({

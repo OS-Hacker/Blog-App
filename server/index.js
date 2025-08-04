@@ -45,7 +45,7 @@ app.use(userRouter);
 app.use(blogRouter);
 app.use(commentRouter);
 
-app.use("/uploads", express.static(path.join("uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // server running
 const port = process.env.PORT || 5000;
