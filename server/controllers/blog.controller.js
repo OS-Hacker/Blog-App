@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/blogs-cover"));
+    cb(null, path.join(__dirname, "../public/uploads/blogs-cover"));
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + file.originalname);

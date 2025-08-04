@@ -3,14 +3,14 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import { fileURLToPath } from "url"; // Add this import
+import path from 'path'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import path from 'path'
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/blogs-cover"));
+    cb(null, path.join(__dirname, "../public/uploads/users-avatar"));
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + file.originalname);
