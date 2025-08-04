@@ -17,7 +17,7 @@ const Navbar = () => {
           {
             navItem: (
               <Avatar
-                src={`${baseUrl}${auth.avatar.url}`}
+                src={`${auth.avatar.url}`}
                 alt={auth.userName}
               />
             ),

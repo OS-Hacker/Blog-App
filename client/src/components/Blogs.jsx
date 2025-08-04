@@ -115,7 +115,7 @@ const Blogs = () => {
             >
               {/* Blog cover image */}
               <ImageContainer>
-                <img src={`${baseUrl}${coverImage.url}`} alt={title} />
+                <img src={`${coverImage.url}`} alt={title} />
               </ImageContainer>
 
               {/* Blog content */}

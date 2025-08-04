@@ -56,7 +56,7 @@ const SingleBlog = () => {
           <AvatarImage
             src={
               blog?.author?.avatar
-                ? `${baseUrl}${blog.author.avatar}`
+                ? `${blog.author.avatar.url}`
                 : "/default-avatar.png"
             }
             alt={blog?.author?.userName || "Anonymous"}
@@ -77,7 +77,7 @@ const SingleBlog = () => {
       </BlogHeader>
       <FeaturedImageContainer>
         <FeaturedImage
-          src={`${baseUrl}${blog?.coverImage}`}
+          src={`${blog?.coverImage.url}`}
           alt={blog?.title}
           loading="lazy"
         />
