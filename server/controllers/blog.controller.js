@@ -7,9 +7,19 @@ import { User } from "../models/user.model.js";
 
 
 // Update the upload configuration
+
+// Update the upload configuration
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads"); // Fixed: removed nested cb call
+  destination: async (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    
+    try {
+      // Create directory if it doesn't exist (recursive: true creates parent directories too)
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (err) {
+      cb(err);
+    }
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -111,8 +121,6 @@ export const createBlogController = async (req, res, next) => {
     const { title, content, category } = req.body;
     const author = req.user.id; // From auth middleware
 
-
-
     // 1. Validation
     if (!title || !content || !category) {
       return res.status(400).json({ message: "All fields are required" });
@@ -122,14 +130,17 @@ export const createBlogController = async (req, res, next) => {
       return res.status(400).json({ message: "cover-images is required" });
     }
 
-
-
     // 2. Handle image upload with Multer
+    // At the top of your file
+    const UPLOADS_DIR = path.join("public", "uploads");
+
+    // In createBlogController
     let coverImagePath = "";
     if (req.file) {
-      coverImagePath = `/uploads/${req.file.filename}`; // Path for frontend
+      coverImagePath = path
+        .join("/uploads", req.file.filename)
+        .replace(/\\/g, "/"); // Ensure forward slashes for URLs
     }
-
     // 3. Create slug
     const slug = slugify(title, { lower: true, strict: true });
 
