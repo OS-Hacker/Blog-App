@@ -1,23 +1,7 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import multer from "multer";
-import { fileURLToPath } from "url"; // Add this import
-import path from 'path'
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/uploads/users-avatar"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + file.originalname);
-  },
-});
-
-export const upload = multer({ storage: storage });
+import { uploadToCloudinary } from "./blog.controller.js";
 
 export const signUpController = async (req, res) => {
   try {
@@ -36,13 +20,8 @@ export const signUpController = async (req, res) => {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    // avatar
-    let avatarImagePath = "";
-    if (req.file) {
-      avatarImagePath = `/uploads/users-avatar/${req.file.filename}`; // for frontend
-    } else {
-      return res.status(400).json({ message: "Avatar is required" });
-    }
+    // Upload avatar to Cloudinary
+    const result = await uploadToCloudinary(req.file.buffer, "user-avatars");
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -52,7 +31,10 @@ export const signUpController = async (req, res) => {
       userName,
       email,
       password: hashedPassword,
-      avatar: avatarImagePath,
+      avatar: {
+        public_id: result.public_id,
+        url: result.secure_url,
+      },
     });
 
     // Create JWT

@@ -13,10 +13,10 @@ cloudinary.config({
 
 // Configure multer for memory storage (to upload buffer to Cloudinary)
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+export const upload = multer({ storage });
 
 // Helper function to upload image to Cloudinary
-const uploadToCloudinary = async (fileBuffer, folder) => {
+export const uploadToCloudinary = async (fileBuffer, folder) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder },

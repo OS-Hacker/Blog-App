@@ -30,7 +30,7 @@ blogRouter.patch("/:slug/view", isLoggin, viewCountController);
 blogRouter.post(
   "/blog/create",
   isLoggin,
-  upload,
+  upload.single("coverImage"),
   createBlogController
 );
 
@@ -38,7 +38,7 @@ blogRouter.post(
 blogRouter.put(
   "/blog/edit/:id",
   isLoggin,
-  upload,
+  upload.single("coverImage"),
   updateblogController
 );
 

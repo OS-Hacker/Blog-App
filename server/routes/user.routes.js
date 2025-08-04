@@ -4,9 +4,9 @@ import {
   loginController,
   logoutUser,
   signUpController,
-  upload,
 } from "../controllers/user.controller.js";
 import { isLoggin } from "../middleware/verifyToken.js";
+import { upload } from "../controllers/blog.controller.js";
 
 const userRouter = express.Router();
 
