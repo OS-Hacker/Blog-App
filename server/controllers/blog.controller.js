@@ -3,11 +3,14 @@ import { Blog } from "../models/blog.model.js";
 import fs from "fs";
 import path from "path";
 import slugify from "slugify";
+import { fileURLToPath } from "url"; // Add this import
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/blogs-cover");
+    cb(null, path.join(__dirname, "../public/blogs-cover"));
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + file.originalname);
