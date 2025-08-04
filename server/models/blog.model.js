@@ -23,15 +23,21 @@ const blogSchema = new mongoose.Schema(
       // required: true,
     },
     coverImage: {
-      type: String,
-      // required: true,
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // References the User model
       // required: true,
     },
-    likes: [ 
+    likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

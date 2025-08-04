@@ -56,7 +56,7 @@ export const signUpController = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
-          avatar: user.avatar,
+          avatar: user.avatar.url, // Send just the URL
           role: user.role,
         },
       });
@@ -95,6 +95,7 @@ export const loginController = async (req, res, next) => {
         user: {
           id: user._id,
           name: user.name,
+          avatar: user.avatar.url, // Send just the URL
           email: user.email,
           role: user.role,
         },
