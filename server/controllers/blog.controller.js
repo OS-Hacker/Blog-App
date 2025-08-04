@@ -7,31 +7,56 @@ import { fileURLToPath } from "url"; // Add this import
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const createUploadsDirectory = () => {
+  const uploadsDir = path.join(__dirname, "../public/uploads");
+  const blogsCoverDir = path.join(uploadsDir, "blogs-cover");
+
+  // Create directories if they don't exist
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  if (!fs.existsSync(blogsCoverDir)) {
+    fs.mkdirSync(blogsCoverDir, { recursive: true });
+  }
+};
+
+// Call this function when your server starts
+createUploadsDirectory();
+
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/uploads/blogs-cover"));
+    // Ensure directory exists before saving
+    const destPath = path.join(__dirname, "../public/uploads/blogs-cover");
+    if (!fs.existsSync(destPath)) {
+      fs.mkdirSync(destPath, { recursive: true });
+    }
+    cb(null, destPath);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + file.originalname);
+    // Improved filename with date prefix and original name
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${uniqueSuffix}-${file.originalname}`);
   },
 });
 
 export const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
     const filetypes = /jpe?g|png|gif/;
     const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
+
     if (mimetype && extname) {
       return cb(null, true);
     }
-    cb(new Error('Only images are allowed (jpeg, jpg, png, gif)'));
-  }
+    cb(new Error("Only images are allowed (jpeg, jpg, png, gif)"));
+  },
 });
 
 
