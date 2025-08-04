@@ -25,13 +25,11 @@ const createUploadsDirectory = () => {
 // Call this function when your server starts
 createUploadsDirectory();
 
-
-
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Ensure directory exists before saving
-    const destPath = path.join(__dirname, "../public/uploads/blogs-cover");
+    const destPath = path.join(__dirname, "/public/uploads/blogs-cover");
     if (!fs.existsSync(destPath)) {
       fs.mkdirSync(destPath, { recursive: true });
     }
