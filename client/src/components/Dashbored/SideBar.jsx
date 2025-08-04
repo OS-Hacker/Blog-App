@@ -61,7 +61,7 @@ const SideBar = () => {
 
         <UserSection $collapsed={collapsed}>
           <Avatar
-            src={`${baseUrl}${auth?.avatar}`}
+            src={`${baseUrl}${auth?.avatar.url}`}
             alt={auth?.userName}
             $collapsed={collapsed}
           />

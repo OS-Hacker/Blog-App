@@ -16,7 +16,10 @@ const Navbar = () => {
       ? [
           {
             navItem: (
-              <Avatar src={`${baseUrl}${auth.avatar}`} alt={auth.userName} />
+              <Avatar
+                src={`${baseUrl}${auth.avatar.url}`}
+                alt={auth.userName}
+              />
             ),
             navPath: "/profile",
             hideLabel: true,
