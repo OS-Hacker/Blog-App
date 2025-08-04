@@ -1,30 +1,20 @@
 import multer from "multer";
 import { Blog } from "../models/blog.model.js";
 import fs from "fs";
-import path from "path";
+import path from "path"; // Add this import
 import slugify from "slugify";
-import { fileURLToPath } from "url"; // Add this import
-import { User } from "../models/user.model.js";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-console.log(__dirname); // C:\Users\os363\OneDrive\Desktop\Crud Oprations\server
-
-// Improved directory initialization
-
 
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, cb(null, "public/uploads")); // Use the pre-verified path
+    cb(null, "public/uploads"); // Fixed: removed nested cb call
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '-');
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, "-");
     cb(null, `${uniqueSuffix}-${sanitizedName}`);
   },
 });
-
 
 export const upload = multer({
   storage: storage,
@@ -32,14 +22,16 @@ export const upload = multer({
   fileFilter: (req, file, cb) => {
     const validTypes = /jpe?g|png|gif/;
     const isValidMime = validTypes.test(file.mimetype);
-    const isValidExt = validTypes.test(path.extname(file.originalname).toLowerCase());
-    
+    const isValidExt = validTypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
+
     if (isValidMime && isValidExt) {
       return cb(null, true);
     }
-    cb(new Error('Only images (jpeg, jpg, png, gif) are allowed'));
-  }
-}).single('coverImage'); // Ensure this matches your form field name
+    cb(new Error("Only images (jpeg, jpg, png, gif) are allowed"));
+  },
+}).single("coverImage"); // Ensure this matches your form field name
 
 
 export const getBlogsController = async (req, res) => {
