@@ -4,39 +4,19 @@ import fs from "fs";
 import path from "path";
 import slugify from "slugify";
 import { fileURLToPath } from "url"; // Add this import
+import { User } from "../models/user.model.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 console.log(__dirname); // C:\Users\os363\OneDrive\Desktop\Crud Oprations\server
 
 // Improved directory initialization
-const initializeUploads = () => {
-  try {
-    const basePath = path.join(__dirname, '../public/uploads/blogs-cover');
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(basePath)) {
-      fs.mkdirSync(basePath, { recursive: true });
-      console.log('Created upload directory:', basePath);
-    }
-    
-    // Verify write permissions
-    fs.accessSync(basePath, fs.constants.W_OK);
-    console.log('Verified write permissions');
-    
-    return basePath;
-  } catch (error) {
-    console.error('Failed to initialize upload directory:', error);
-    process.exit(1); // Exit if we can't create directory
-  }
-};
 
-const uploadBasePath = initializeUploads();
 
 // Update the upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadBasePath); // Use the pre-verified path
+    cb(null, cb(null, "public/uploads")); // Use the pre-verified path
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -44,6 +24,7 @@ const storage = multer.diskStorage({
     cb(null, `${uniqueSuffix}-${sanitizedName}`);
   },
 });
+
 
 export const upload = multer({
   storage: storage,
@@ -159,7 +140,7 @@ export const createBlogController = async (req, res, next) => {
     // 2. Handle image upload with Multer
     let coverImagePath = "";
     if (req.file) {
-      coverImagePath = `/uploads/blogs-cover/${req.file.filename}`; // Path for frontend
+      coverImagePath = `/uploads/${req.file.filename}`; // Path for frontend
     }
 
     // 3. Create slug
