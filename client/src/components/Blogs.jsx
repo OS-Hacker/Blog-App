@@ -189,222 +189,633 @@ export default Blogs;
 /*************************
  * STYLED COMPONENTS
  *************************/
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import styled from "styled-components";
+import axios from "axios";
+import { baseUrl } from "../../pages/Signup";
+import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaImage, FaCamera, FaTimes } from "react-icons/fa";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-// Container for the blog cards grid
-const CardGrid = styled.div`
-  width: 80vw;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin: 20px auto;
-  padding: 4rem 0;
-`;
+const UpdateBlog = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const quillRef = useRef(null);
 
-// Container for author avatar and info
-const AvatarContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px #ff9800;
-`;
+  const [blogData, setBlogData] = useState({
+    title: "",
+    content: "",
+    category: "",
+    image: null,
+    previewImage: "",
+    existingImage: null,
+  });
 
-// Wrapper for avatar and username
-const AvatarWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [blogId, setBlogId] = useState("");
 
-// Author avatar image
-const AvatarImage = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ff9800;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
+  // Quill editor configuration
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ script: "sub" }, { script: "super" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ direction: "rtl" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        ["link", "image", "video"],
+        ["clean"],
+      ],
+      imageResize: {
+        parchment: ReactQuill.Quill.import("parchment"),
+        modules: ["Resize", "DisplaySize"],
+      },
+    }),
+    []
+  );
 
-// Author username text
-const UserName = styled.span`
-  font-weight: 600;
-  color: gray;
-  font-size: 0.9rem;
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "link",
+    "image",
+  ];
 
-  &:hover {
-    color: #ff9800;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
+  // Fetch single blog data
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      try {
+        const { data } = await axios.get(`${baseUrl}/single-blog/${slug}`);
+        setBlogData({
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          previewImage: data.coverImage.url,
+          existingImage: data.coverImage,
+        });
+        setBlogId(data._id);
+      } catch (error) {
+        toast.error("Failed to load blog data");
+        console.error(error);
+      }
+    };
+    fetchBlogData();
+  }, [slug]);
 
-// Blog creation date
-const CreatedDate = styled.span`
-  font-size: 0.8rem;
-  color: gray;
-  white-space: nowrap;
-`;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setBlogData((prev) => ({ ...prev, [name]: value }));
+  };
 
-// Individual blog card container
-const CardContainer = styled.article`
-  width: 100%;
-  margin: 20px 0px;
-  max-width: 300px;
-  border-radius: 12px;
-  /* background: white; */
-  box-shadow: 0 2px 4px #ff9800;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  const handleContentChange = (value) => {
+    setBlogData((prev) => ({ ...prev, content: value }));
+  };
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px #ff9800;
-  }
-`;
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
 
-// Container for blog cover image
-const ImageContainer = styled.div`
-  width: 100%;
-  height: 150px;
-  overflow: hidden;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate image size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setErrors({
+          ...errors,
+          coverImage: "Image size should be less than 2MB",
+        });
+        return;
+      }
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+      // Validate image type
+      if (!file.type.match("image.*")) {
+        setErrors({
+          ...errors,
+          coverImage: "Only image files are allowed",
+        });
+        return;
+      }
 
-    ${CardContainer}:hover & {
-      transform: scale(1.05);
+      setBlogData((prev) => ({
+        ...prev,
+        image: file,
+        previewImage: URL.createObjectURL(file),
+      }));
+      setErrors({ ...errors, coverImage: "" });
     }
-  }
+  };
+
+  const removeImage = () => {
+    setBlogData((prev) => ({
+      ...prev,
+      image: null,
+      previewImage: "",
+      existingImage: null,
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!blogData.title.trim()) newErrors.title = "Title is required";
+    if (!blogData.content.trim()) newErrors.content = "Content is required";
+    if (!blogData.category) newErrors.category = "Category is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("title", blogData.title);
+      formData.append("content", blogData.content);
+      formData.append("category", blogData.category);
+      
+      // Only append image if a new one was selected
+      if (blogData.image) {
+        formData.append("coverImage", blogData.image);
+      }
+
+      // If image was removed
+      if (!blogData.image && !blogData.previewImage && blogData.existingImage) {
+        formData.append("removeImage", "true");
+      }
+
+      const { data } = await axios.put(
+        `${baseUrl}/blog/edit/${blogId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      toast.success(data.message || "Blog updated successfully");
+      navigate("/user-dashboard");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to update blog";
+      toast.error(errorMessage);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderImagePreview = () => {
+    if (blogData.previewImage) {
+      if (typeof blogData.previewImage === "string" && blogData.previewImage.startsWith("blob:")) {
+        return (
+          <>
+            <PreviewImage src={blogData.previewImage} alt="Cover preview" />
+            <RemoveImageButton onClick={(e) => {
+              e.stopPropagation();
+              removeImage();
+            }}>
+              <FaTimes />
+            </RemoveImageButton>
+          </>
+        );
+      }
+    }
+    
+    if (blogData.existingImage?.url) {
+      return (
+        <>
+          <PreviewImage src={blogData.existingImage.url} alt="Cover preview" />
+          <RemoveImageButton onClick={(e) => {
+            e.stopPropagation();
+            removeImage();
+          }}>
+            <FaTimes />
+          </RemoveImageButton>
+        </>
+      );
+    }
+
+    return (
+      <ImagePlaceholder>
+        <FaImage size={40} color="#ccc" />
+        <span>Click to upload cover image</span>
+      </ImagePlaceholder>
+    );
+  };
+
+  return (
+    <PageContainer>
+      <FormContainer>
+        <FormHeading>Update Blog Post</FormHeading>
+        <FormDescription>
+          Update your knowledge and ideas with the community
+        </FormDescription>
+
+        <Form onSubmit={handleSubmit}>
+          {/* Cover Image Upload */}
+          <ImageUploadContainer>
+            <ImageUploadLabel>Cover Image</ImageUploadLabel>
+            <ImagePreview
+              onClick={triggerFileInput}
+              $hasError={!!errors.coverImage}
+            >
+              {renderImagePreview()}
+              <CameraOverlay>
+                <FaCamera size={20} />
+                <span>Change Image</span>
+              </CameraOverlay>
+            </ImagePreview>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+            {errors.coverImage && <ErrorText>{errors.coverImage}</ErrorText>}
+            <ImageHint>Recommended size: 1200x630px, Max 2MB (JPEG, PNG)</ImageHint>
+          </ImageUploadContainer>
+
+          {/* Title Input */}
+          <FormGroup>
+            <Label htmlFor="title">Title *</Label>
+            <Input
+              type="text"
+              id="title"
+              name="title"
+              value={blogData.title}
+              onChange={handleChange}
+              $hasError={!!errors.title}
+              placeholder="Enter a catchy title..."
+              maxLength="100"
+            />
+            <CharCount>{blogData.title.length}/100</CharCount>
+            {errors.title && <ErrorText>{errors.title}</ErrorText>}
+          </FormGroup>
+
+          {/* Category Select */}
+          <FormGroup>
+            <Label htmlFor="category">Category *</Label>
+            <Select
+              id="category"
+              name="category"
+              value={blogData.category}
+              onChange={handleChange}
+              $hasError={!!errors.category}
+            >
+              <option value="">Select a category</option>
+              <option value="technology">Technology</option>
+              <option value="travel">Travel</option>
+              <option value="food">Food & Cooking</option>
+              <option value="lifestyle">Lifestyle</option>
+              <option value="business">Business</option>
+              <option value="health">Health & Wellness</option>
+              <option value="education">Education</option>
+            </Select>
+            {errors.category && <ErrorText>{errors.category}</ErrorText>}
+          </FormGroup>
+
+          {/* Content Editor */}
+          <FormGroup>
+            <Label htmlFor="content">Content *</Label>
+            <EditorContainer $hasError={!!errors.content}>
+              <ReactQuill
+                theme="snow"
+                value={blogData.content}
+                onChange={handleContentChange}
+                modules={modules}
+                formats={formats}
+                ref={quillRef}
+                style={{ height: "300px" }}
+              />
+            </EditorContainer>
+            {errors.content && <ErrorText>{errors.content}</ErrorText>}
+          </FormGroup>
+
+          <ButtonGroup>
+            <CancelButton type="button" onClick={() => navigate(-1)}>
+              Cancel
+            </CancelButton>
+            <SubmitButton type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner />
+                  Updating...
+                </>
+              ) : (
+                "Update Blog"
+              )}
+            </SubmitButton>
+          </ButtonGroup>
+        </Form>
+      </FormContainer>
+    </PageContainer>
+  );
+};
+
+// Styled Components
+const PageContainer = styled.div`
+  min-height: 100vh;
+  padding: 2rem 0;
+  background-color: #f5f5f5;
 `;
 
-// Container for blog content (below image)
-const ContentContainer = styled.div`
-  padding: 1.5rem;
+const FormContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const FormHeading = styled.h1`
+  font-size: 2rem;
+  color: #2c3e50;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+`;
+
+const FormDescription = styled.p`
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+`;
+
+const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1.8rem;
 `;
 
-// Container for category tag and icons
-const SubContainer = styled.span`
+const ImageUploadContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
-// Blog title
-const Title = styled.h3`
-  font-size: 1rem;
+const ImageUploadLabel = styled.label`
   font-weight: 600;
-  color: #faf4e8;
-  margin: 0;
-  line-height: 1.3;
-`;
-
-// Category tag/chip
-const CategoryTag = styled.span`
-  display: inline-block;
-  color: white;
-  padding: 0.35rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-  background-color: ${({ category }) => {
-    switch (category) {
-      case "technology":
-        return "#4299e1"; // blue
-      case "travel":
-        return "#48bb78"; // green
-      case "food":
-        return "#ed8936"; // orange
-      case "lifestyle":
-        return "#9f7aea"; // purple
-      case "business":
-        return "#f56565"; // red
-      case "health":
-        return "#38b2ac"; // teal
-      case "education":
-        return "#667eea"; // indigo
-      default:
-        return "#a0aec0"; // gray for unknown categories
-    }
-  }};
-`;
-
-// Blog content excerpt
-const Excerpt = styled.p`
   font-size: 0.95rem;
-  color: #4b5563;
-  line-height: 1.5;
-  /* display: -webkit-box;
-  -webkit-line-clamp: 3; */
-  /* -webkit-box-orient: vertical; */
-  overflow: hidden;
+  color: #2c3e50;
 `;
 
-// Container for view/like icons
-const IconContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-  padding: 0 16px 16px;
-`;
-
-// View count component
-export const ViewCount = styled.span`
+const ImagePreview = styled.div`
+  position: relative;
+  width: 100%;
+  height: 250px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: #666;
-
-  svg {
-    color: #888;
-    font-size: 14px;
-  }
-`;
-
-// Like button with animation
-export const LikeIconButton = styled.button`
-  background: none;
-  border: none;
-  padding: 0;
+  justify-content: center;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: ${(props) => (props.$isLiked ? "#ff0000" : "#666")};
-  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 2px dashed ${(props) => (props.$hasError ? "#e74c3c" : "#bdc3c7")};
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
 
   &:hover {
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#3498db")};
+  }
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const ImagePlaceholder = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  color: #7f8c8d;
+
+  span {
+    font-size: 0.95rem;
+  }
+`;
+
+const CameraOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${ImagePreview}:hover & {
+    opacity: 1;
+  }
+`;
+
+const RemoveImageButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(231, 76, 60, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(231, 76, 60, 1);
     transform: scale(1.1);
   }
+`;
 
-  svg {
-    transition: all 0.3s ease;
+const ImageHint = styled.span`
+  font-size: 0.8rem;
+  color: #95a5a6;
+  text-align: center;
+  margin-top: 0.3rem;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+`;
+
+const Label = styled.label`
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#3498db")};
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
   }
 
-  &.liked {
-    animation: pulse 0.3s ease;
+  &::placeholder {
+    color: #bdc3c7;
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2334495e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 0.65rem auto;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+`;
+
+const EditorContainer = styled.div`
+  .ql-toolbar {
+    border-radius: 6px 6px 0 0;
+    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+    border-bottom: none;
   }
 
-  @keyframes pulse {
+  .ql-container {
+    border-radius: 0 0 6px 6px;
+    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+    font-size: 1rem;
+  }
+
+  .ql-editor {
+    min-height: 300px;
+  }
+`;
+
+const CharCount = styled.span`
+  font-size: 0.8rem;
+  color: #95a5a6;
+  text-align: right;
+  margin-top: -0.3rem;
+`;
+
+const ErrorText = styled.span`
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: -0.2rem;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
+const BaseButton = styled.button`
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
+const SubmitButton = styled(BaseButton)`
+  background: #3498db;
+  color: white;
+
+  &:hover {
+    background: #2980b9;
+  }
+
+  &:disabled {
+    background: #bdc3c7;
+  }
+`;
+
+const CancelButton = styled(BaseButton)`
+  background: #f1f1f1;
+  color: #2c3e50;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+`;
+
+const Spinner = styled.div`
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid white;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
     0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.2);
+      transform: rotate(0deg);
     }
     100% {
-      transform: scale(1);
+      transform: rotate(360deg);
     }
   }
 `;
