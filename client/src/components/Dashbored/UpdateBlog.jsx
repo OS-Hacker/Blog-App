@@ -372,6 +372,15 @@ const FormContainer = styled.div`
   padding: 2.5rem;
 `;
 
+const CancelButton = styled(BaseButton)`
+  background: #f1f1f1;
+  color: #2c3e50;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+`;
+
 const FormHeading = styled.h1`
   font-size: 2rem;
   color: #2c3e50;
