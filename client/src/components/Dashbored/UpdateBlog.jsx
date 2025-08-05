@@ -381,6 +381,29 @@ const CancelButton = styled.button`
   }
 `;
 
+const RemoveImageButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(231, 76, 60, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(231, 76, 60, 1);
+    transform: scale(1.1);
+  }
+`;
+
 const FormHeading = styled.h1`
   font-size: 2rem;
   color: #2c3e50;
