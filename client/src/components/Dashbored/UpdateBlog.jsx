@@ -4,7 +4,7 @@ import axios from "axios";
 import { baseUrl } from "../../pages/Signup";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaImage, FaCamera } from "react-icons/fa";
+import { FaImage, FaCamera, FaTimes } from "react-icons/fa";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -20,13 +20,14 @@ const UpdateBlog = () => {
     category: "",
     image: null,
     previewImage: "",
+    existingImage: null,
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [blogId, setBlogId] = useState("");
 
   // Quill editor configuration
-  // Configure Quill modules
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -50,7 +51,6 @@ const UpdateBlog = () => {
     []
   );
 
-
   const formats = [
     "header",
     "bold",
@@ -64,9 +64,6 @@ const UpdateBlog = () => {
     "image",
   ];
 
-  // get Blog id
-  const [blogId, setBlogId] = useState("");
-
   // Fetch single blog data
   useEffect(() => {
     const fetchBlogData = async () => {
@@ -76,7 +73,8 @@ const UpdateBlog = () => {
           title: data.title,
           content: data.content,
           category: data.category,
-          previewImage: data.coverImage,
+          previewImage: data.coverImage.url,
+          existingImage: data.coverImage,
         });
         setBlogId(data._id);
       } catch (error) {
@@ -112,6 +110,15 @@ const UpdateBlog = () => {
         return;
       }
 
+      // Validate image type
+      if (!file.type.match("image.*")) {
+        setErrors({
+          ...errors,
+          coverImage: "Only image files are allowed",
+        });
+        return;
+      }
+
       setBlogData((prev) => ({
         ...prev,
         image: file,
@@ -119,6 +126,15 @@ const UpdateBlog = () => {
       }));
       setErrors({ ...errors, coverImage: "" });
     }
+  };
+
+  const removeImage = () => {
+    setBlogData((prev) => ({
+      ...prev,
+      image: null,
+      previewImage: "",
+      existingImage: null,
+    }));
   };
 
   const validateForm = () => {
@@ -141,25 +157,85 @@ const UpdateBlog = () => {
     try {
       const formData = new FormData();
       formData.append("title", blogData.title);
-      formData.append("content", blogData.content.toString());
+      formData.append("content", blogData.content);
       formData.append("category", blogData.category);
+
+      // Only append image if a new one was selected
       if (blogData.image) {
         formData.append("coverImage", blogData.image);
       }
 
+      // If image was removed
+      if (!blogData.image && !blogData.previewImage && blogData.existingImage) {
+        formData.append("removeImage", "true");
+      }
+
       const { data } = await axios.put(
         `${baseUrl}/blog/edit/${blogId}`,
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       toast.success(data.message || "Blog updated successfully");
       navigate("/user-dashboard");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update blog");
+      const errorMessage =
+        error.response?.data?.message || "Failed to update blog";
+      toast.error(errorMessage);
       console.error(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderImagePreview = () => {
+    if (blogData.previewImage) {
+      if (
+        typeof blogData.previewImage === "string" &&
+        blogData.previewImage.startsWith("blob:")
+      ) {
+        return (
+          <>
+            <PreviewImage src={blogData.previewImage} alt="Cover preview" />
+            <RemoveImageButton
+              onClick={(e) => {
+                e.stopPropagation();
+                removeImage();
+              }}
+            >
+              <FaTimes />
+            </RemoveImageButton>
+          </>
+        );
+      }
+    }
+
+    if (blogData.existingImage?.url) {
+      return (
+        <>
+          <PreviewImage src={blogData.existingImage.url} alt="Cover preview" />
+          <RemoveImageButton
+            onClick={(e) => {
+              e.stopPropagation();
+              removeImage();
+            }}
+          >
+            <FaTimes />
+          </RemoveImageButton>
+        </>
+      );
+    }
+
+    return (
+      <ImagePlaceholder>
+        <FaImage size={40} color="#ccc" />
+        <span>Click to upload cover image</span>
+      </ImagePlaceholder>
+    );
   };
 
   return (
@@ -178,25 +254,7 @@ const UpdateBlog = () => {
               onClick={triggerFileInput}
               $hasError={!!errors.coverImage}
             >
-              {blogData.previewImage ? (
-                typeof blogData.previewImage === "string" &&
-                blogData.previewImage.startsWith("blob:") ? (
-                  <PreviewImage
-                    src={blogData.previewImage}
-                    alt="Cover preview"
-                  />
-                ) : (
-                  <PreviewImage
-                    src={`${baseUrl}${blogData.previewImage}`}
-                    alt="Cover preview"
-                  />
-                )
-              ) : (
-                <ImagePlaceholder>
-                  <FaImage size={40} color="#ccc" />
-                  <span>Click to upload cover image</span>
-                </ImagePlaceholder>
-              )}
+              {renderImagePreview()}
               <CameraOverlay>
                 <FaCamera size={20} />
                 <span>Change Image</span>
@@ -210,7 +268,9 @@ const UpdateBlog = () => {
               style={{ display: "none" }}
             />
             {errors.coverImage && <ErrorText>{errors.coverImage}</ErrorText>}
-            <ImageHint>Recommended size: 1200x630px, Max 2MB</ImageHint>
+            <ImageHint>
+              Recommended size: 1200x630px, Max 2MB (JPEG, PNG)
+            </ImageHint>
           </ImageUploadContainer>
 
           {/* Title Input */}
@@ -269,82 +329,80 @@ const UpdateBlog = () => {
             {errors.content && <ErrorText>{errors.content}</ErrorText>}
           </FormGroup>
 
-          <SubmitButton type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <Spinner />
-                Updating...
-              </>
-            ) : (
-              "Update Blog"
-            )}
-          </SubmitButton>
+          <ButtonGroup>
+            <CancelButton type="button" onClick={() => navigate(-1)}>
+              Cancel
+            </CancelButton>
+            <SubmitButton type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner />
+                  Updating...
+                </>
+              ) : (
+                "Update Blog"
+              )}
+            </SubmitButton>
+          </ButtonGroup>
         </Form>
       </FormContainer>
     </PageContainer>
   );
 };
 
-// Styled Components (remain the same as in your original file)
+// Styled Components
 const PageContainer = styled.div`
   min-height: 100vh;
   padding: 2rem 0;
+  background-color: #f5f5f5;
 `;
 
 const FormContainer = styled.div`
   max-width: 800px;
-  background: rgba(207, 198, 198, 0.1) !important;
-  margin: 0px auto;
-  border-radius: 30px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
   padding: 2.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const FormHeading = styled.h1`
   font-size: 2rem;
   color: #2c3e50;
-  background-color: #151414 !important;
   text-align: center;
   font-weight: 700;
-  @media (max-width: 768px) {
-    margin-top: 10px;
-  }
+  margin-bottom: 0.5rem;
 `;
 
 const FormDescription = styled.p`
   text-align: center;
   color: #7f8c8d;
-  background-color: #151414 !important;
   font-size: 1rem;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
+  margin-bottom: 2rem;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  background-color: #151414 !important;
   gap: 1.8rem;
 `;
 
 const ImageUploadContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #151414 !important;
   gap: 0.5rem;
 `;
 
 const ImageUploadLabel = styled.label`
   font-weight: 600;
-  background-color: #151414 !important;
   font-size: 0.95rem;
+  color: #2c3e50;
 `;
 
 const ImagePreview = styled.div`
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 250px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -353,10 +411,10 @@ const ImagePreview = styled.div`
   overflow: hidden;
   border: 2px dashed ${(props) => (props.$hasError ? "#e74c3c" : "#bdc3c7")};
   transition: all 0.2s ease;
-  background-color: #151414 !important;
+  background-color: #f8f9fa;
 
   &:hover {
-    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#3498db")};
   }
 `;
 
@@ -364,7 +422,6 @@ const PreviewImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background-color: #151414 !important;
 `;
 
 const ImagePlaceholder = styled.div`
@@ -372,11 +429,10 @@ const ImagePlaceholder = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
-  background-color: #151414 !important;
+  color: #7f8c8d;
 
   span {
     font-size: 0.95rem;
-    background-color: #151414 !important;
   }
 `;
 
@@ -385,13 +441,14 @@ const CameraOverlay = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #151414 !important;
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+  color: white;
   opacity: 0;
   transition: opacity 0.2s ease;
 
@@ -400,10 +457,32 @@ const CameraOverlay = styled.div`
   }
 `;
 
+const RemoveImageButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(231, 76, 60, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(231, 76, 60, 1);
+    transform: scale(1.1);
+  }
+`;
+
 const ImageHint = styled.span`
   font-size: 0.8rem;
   color: #95a5a6;
-  background-color: #151414 !important;
   text-align: center;
   margin-top: 0.3rem;
 `;
@@ -412,14 +491,12 @@ const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  background-color: #151414 !important;
 `;
 
 const Label = styled.label`
   font-weight: 600;
-  color: #34495e;
+  color: #2c3e50;
   font-size: 0.95rem;
-  background-color: #151414 !important;
 `;
 
 const Input = styled.input`
@@ -432,10 +509,8 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
-    box-shadow: 0 0 0 3px
-      ${(props) =>
-        props.$hasError ? "rgba(231, 76, 60, 0.1)" : "rgba(52, 152, 219, 0.1)"};
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#3498db")};
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
   }
 
   &::placeholder {
@@ -458,7 +533,7 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #ff9800;
+    border-color: #3498db;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
   }
 `;
@@ -477,7 +552,7 @@ const EditorContainer = styled.div`
   }
 
   .ql-editor {
-    min-height: 200px;
+    min-height: 300px;
   }
 `;
 
@@ -486,21 +561,23 @@ const CharCount = styled.span`
   color: #95a5a6;
   text-align: right;
   margin-top: -0.3rem;
-  background-color: #151414 !important;
 `;
 
 const ErrorText = styled.span`
   color: #e74c3c;
   font-size: 0.85rem;
   margin-top: -0.2rem;
-  background-color: #151414 !important;
 `;
 
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 0.5rem;
-  background: #ff9800;
-  z-index: 1223;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
+const BaseButton = styled.button`
+  flex: 1;
+  padding: 0.8rem;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -511,18 +588,36 @@ const SubmitButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 4rem;
 
   &:active {
     transform: scale(0.98);
   }
 
   &:disabled {
-    background: #bdc3c7;
+    opacity: 0.7;
     cursor: not-allowed;
   }
-  @media (max-width: 768px) {
-    margin-top: 10rem;
+`;
+
+const SubmitButton = styled(BaseButton)`
+  background: #3498db;
+  color: white;
+
+  &:hover {
+    background: #2980b9;
+  }
+
+  &:disabled {
+    background: #bdc3c7;
+  }
+`;
+
+const CancelButton = styled(BaseButton)`
+  background: #f1f1f1;
+  color: #2c3e50;
+
+  &:hover {
+    background: #e0e0e0;
   }
 `;
 
