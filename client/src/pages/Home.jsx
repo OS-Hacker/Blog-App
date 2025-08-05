@@ -44,7 +44,7 @@ const bgZoom = keyframes`
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-image: url(${blogImage});
   background-size: cover;
   background-position: center;
@@ -79,7 +79,7 @@ const Wrapper = styled.div`
     color: #fff;
     padding: 2rem;
     max-width: 700px;
-    width: 80%;
+    width: 100%;
     animation: ${fadeIn} 1.5s ease forwards;
 
     h1 {
