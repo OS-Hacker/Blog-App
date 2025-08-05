@@ -372,7 +372,7 @@ const FormContainer = styled.div`
   padding: 2.5rem;
 `;
 
-const CancelButton = styled(BaseButton)`
+const CancelButton = styled.button`
   background: #f1f1f1;
   color: #2c3e50;
 
