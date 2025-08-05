@@ -116,7 +116,7 @@ const Comments = () => {
           <Avatar>
             {comment.author?.avatar ? (
               <AvatarImage
-                src={`${baseUrl}${comment.author.avatar}`}
+                src={comment.author.avatar.url}
                 alt="user"
               />
             ) : (
