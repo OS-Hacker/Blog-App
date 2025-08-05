@@ -357,6 +357,13 @@ const PageContainer = styled.div`
   padding: 2rem 0;
 `;
 
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
 const FormContainer = styled.div`
   max-width: 800px;
   background: rgba(207, 198, 198, 0.1) !important;
