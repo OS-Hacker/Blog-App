@@ -203,7 +203,7 @@ export default Blogs;
 // Container for the blog cards grid
 
 const BlogsContainer = styled.div`
-  height: 97vh;
+  height: 100%;
   background-color: black;
 `;
 
