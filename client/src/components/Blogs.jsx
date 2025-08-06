@@ -183,7 +183,10 @@ const Blogs = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height:"70vh"
+              minHeight: "70vh",
+              color: "white",
+              fontSize: "1.2rem",
+              textAlign: "center",
             }}
           >
             Blog Not Found
@@ -203,8 +206,9 @@ export default Blogs;
 // Container for the blog cards grid
 
 const BlogsContainer = styled.div`
-  height: 100%;
+  min-height: 100vh; /* ensures full viewport height */
   background-color: black;
+  padding: 2rem 0; /* add some vertical spacing */
 `;
 
 const CardGrid = styled.div`
