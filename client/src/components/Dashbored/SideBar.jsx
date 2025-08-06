@@ -78,6 +78,7 @@ const SideBar = () => {
 export default SideBar;
 
 const SideBarContainer = styled.div`
+  background-color: black;
   height: 90vh;
   position: relative;
   top: 70px;

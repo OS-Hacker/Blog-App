@@ -178,6 +178,7 @@ const DashboardContainer = styled.div`
   max-width: 1400px;
   margin: 4rem auto 2rem;
   animation: fadeIn 0.6s ease-in-out;
+  background-color: black;
 
   @keyframes fadeIn {
     0% {
