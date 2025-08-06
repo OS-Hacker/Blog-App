@@ -75,112 +75,122 @@ const Blogs = () => {
   // Get current user ID from auth context
   const currentUserId = auth?._id;
 
-
   // Main render
   return (
-    <CardGrid>
-      {/* Loading state */}
-      {loading ? (
-        <Loading />
-      ) : /* Render blogs if available */
-      blogs.length > 0 ? (
-        blogs.map((blog) => {
-          // Destructure blog properties
-          const {
-            _id,
-            coverImage,
-            title,
-            category,
-            content,
-            createdAt,
-            author,
-            slug,
-          } = blog;
+    <BlogsContainer>
+      <CardGrid>
+        {/* Loading state */}
+        {loading ? (
+          <Loading />
+        ) : /* Render blogs if available */
+        blogs.length > 0 ? (
+          blogs.map((blog) => {
+            // Destructure blog properties
+            const {
+              _id,
+              coverImage,
+              title,
+              category,
+              content,
+              createdAt,
+              author,
+              slug,
+            } = blog;
 
-          console.log(baseUrl);
+            console.log(baseUrl);
 
-          // Get like data from state or fallback to blog defaults
-          const likeData = likedBlogs[_id] || {};
-          const isLiked = likeData.hasOwnProperty("likedByUser")
-            ? likeData.likedByUser
-            : blog.likes.includes(currentUserId);
+            // Get like data from state or fallback to blog defaults
+            const likeData = likedBlogs[_id] || {};
+            const isLiked = likeData.hasOwnProperty("likedByUser")
+              ? likeData.likedByUser
+              : blog.likes.includes(currentUserId);
 
-          // Get total likes count from state or fallback to blog defaults
-          const totalLikes = likeData.likesCount ?? blog.blogStatus.likes;
+            // Get total likes count from state or fallback to blog defaults
+            const totalLikes = likeData.likesCount ?? blog.blogStatus.likes;
 
-          return (
-            <CardContainer
-              key={_id}
-              onClick={() => Navigate(`/single-blog/${slug}`)}
-            >
-              {/* Blog cover image */}
-              <ImageContainer>
-                <img src={`${coverImage.url}`} alt={title} />
-              </ImageContainer>
+            return (
+              <CardContainer
+                key={_id}
+                onClick={() => Navigate(`/single-blog/${slug}`)}
+              >
+                {/* Blog cover image */}
+                <ImageContainer>
+                  <img src={`${coverImage.url}`} alt={title} />
+                </ImageContainer>
 
-              {/* Blog content */}
-              <ContentContainer>
-                <SubContainer>
-                  {/* Blog category tag */}
-                  <CategoryTag category={category}>{category}</CategoryTag>
+                {/* Blog content */}
+                <ContentContainer>
+                  <SubContainer>
+                    {/* Blog category tag */}
+                    <CategoryTag category={category}>{category}</CategoryTag>
 
-                  {/* View and Like counters */}
-                  <IconContainer onClick={(e) => e.stopPropagation()}>
-                    {/* View counter */}
-                    <ViewCount>
-                      <FaEye />
-                      <span>{blog.blogStatus.views}</span>
-                    </ViewCount>
+                    {/* View and Like counters */}
+                    <IconContainer onClick={(e) => e.stopPropagation()}>
+                      {/* View counter */}
+                      <ViewCount>
+                        <FaEye />
+                        <span>{blog.blogStatus.views}</span>
+                      </ViewCount>
 
-                    {/* Like button with icon that changes based on like state */}
-                    <LikeIconButton
-                      $isLiked={isLiked}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        likeBlog(_id);
-                      }}
-                    >
-                      {isLiked ? <FaHeart /> : <FaRegHeart />}
-                      <span>{totalLikes}</span>
-                    </LikeIconButton>
-                  </IconContainer>
-                </SubContainer>
-                {/* Blog title */}
-                <Title>{title}</Title>
-                {/* Blog excerpt (first 100 chars) */}
-                <Excerpt>
-                  {content.replace(/<[^>]*>?/gm, " ").substring(0, 100)}...
-                </Excerpt>
-                {/* Author info and publish date */}
-                <AvatarContainer>
-                  <AvatarWrapper>
-                    {/* Author avatar */}
-                    <AvatarImage
-                      src={
-                        author?.avatar
-                          ? `${author.avatar.url}`
-                          : "/default-avatar.png"
-                      }
-                      alt={author?.userName || "Anonymous"}
-                      onError={(e) => {
-                        e.target.src = "/default-avatar.png";
-                      }}
-                    />
-                    {/* Author name */}
-                    <UserName>{author?.userName || "Unknown User"}</UserName>
-                  </AvatarWrapper>
-                  {/* Publish date */}
-                  <CreatedDate>{formatCreatedAt(createdAt)}</CreatedDate>
-                </AvatarContainer>
-              </ContentContainer>
-            </CardContainer>
-          );
-        })
-      ) : (
-        /* No blogs found message */
-        <p>Blog Not Found</p>
-      )}
-    </CardGrid>
+                      {/* Like button with icon that changes based on like state */}
+                      <LikeIconButton
+                        $isLiked={isLiked}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          likeBlog(_id);
+                        }}
+                      >
+                        {isLiked ? <FaHeart /> : <FaRegHeart />}
+                        <span>{totalLikes}</span>
+                      </LikeIconButton>
+                    </IconContainer>
+                  </SubContainer>
+                  {/* Blog title */}
+                  <Title>{title}</Title>
+                  {/* Blog excerpt (first 100 chars) */}
+                  <Excerpt>
+                    {content.replace(/<[^>]*>?/gm, " ").substring(0, 100)}...
+                  </Excerpt>
+                  {/* Author info and publish date */}
+                  <AvatarContainer>
+                    <AvatarWrapper>
+                      {/* Author avatar */}
+                      <AvatarImage
+                        src={
+                          author?.avatar
+                            ? `${author.avatar.url}`
+                            : "/default-avatar.png"
+                        }
+                        alt={author?.userName || "Anonymous"}
+                        onError={(e) => {
+                          e.target.src = "/default-avatar.png";
+                        }}
+                      />
+                      {/* Author name */}
+                      <UserName>{author?.userName || "Unknown User"}</UserName>
+                    </AvatarWrapper>
+                    {/* Publish date */}
+                    <CreatedDate>{formatCreatedAt(createdAt)}</CreatedDate>
+                  </AvatarContainer>
+                </ContentContainer>
+              </CardContainer>
+            );
+          })
+        ) : (
+          /* No blogs found message */
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height:"70vh"
+            }}
+          >
+            Blog Not Found
+          </p>
+        )}
+      </CardGrid>
+    </BlogsContainer>
   );
 };
 
@@ -191,6 +201,12 @@ export default Blogs;
  *************************/
 
 // Container for the blog cards grid
+
+const BlogsContainer = styled.div`
+  height: 97vh;
+  background-color: black;
+`;
+
 const CardGrid = styled.div`
   width: 80vw;
   display: grid;

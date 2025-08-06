@@ -302,6 +302,7 @@ const Articles = () => {
 const PageContainer = styled.div`
   min-height: 100vh;
   padding: 2rem 0;
+  background-color: black;
 `;
 
 const FormContainer = styled.div`
@@ -310,6 +311,7 @@ const FormContainer = styled.div`
   margin: 0px auto;
   border-radius: 30px;
   padding: 2.5rem;
+  background-color: black;
 `;
 
 const FormHeading = styled.h1`

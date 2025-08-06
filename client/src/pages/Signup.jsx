@@ -69,7 +69,9 @@ const Signup = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.userName.trim()) newErrors.username = "Username is required";
+    if (!formData.userName.trim()) newErrors.userName = "Username is required";
+    if (formData.userName.length <= 3)
+      newErrors.userName = "Username Should be grater then 3 character";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (!/^\S+@\S+\.\S+$/.test(formData.email))
       newErrors.email = "Email is invalid";
@@ -139,11 +141,11 @@ const Signup = () => {
             name="userName"
             value={formData.userName}
             onChange={handleChange}
-            $hasError={!!errors.username}
+            $hasError={!!errors.userName}
             placeholder="Enter your username"
             disabled={isLoading}
           />
-          {errors.username && <Error>{errors.username}</Error>}
+          {errors.userName && <Error>{errors.userName}</Error>}
         </FormGroup>
 
         <FormGroup>
@@ -199,14 +201,15 @@ const FormContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 93vh;
   margin-top: 50px;
+  background-color: black;
 `;
 
 const Form = styled.form`
   width: 100%;
   max-width: 450px;
-  padding: 2.5rem;
+  padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 `;

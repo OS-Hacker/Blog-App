@@ -91,6 +91,8 @@ const ContentContainer = styled.div`
   padding: 2rem;
   max-width: 700px;
   width: 100%;
+  background-color: black;
+
   animation: ${fadeIn} 1.5s ease forwards;
 
   @media (max-width: 768px) {

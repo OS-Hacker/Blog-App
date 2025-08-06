@@ -17,6 +17,11 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // remove error while fill input
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const validate = () => {
@@ -91,7 +96,7 @@ const Login = () => {
         </SubmitButton>
 
         <LoginLink>
-          Don't have an account? <Link to="/Signup">SignUp</Link>
+          Don't have an account? <Link to="/signup">SignUp</Link>
         </LoginLink>
       </Form>
     </FormContainer>
@@ -105,8 +110,10 @@ const FormContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
-  margin-top: 60px;
+  min-height: 90vh;
+  position: relative;
+  top: 65px;
+  background-color: black;
 `;
 
 const Form = styled.form`
@@ -115,6 +122,7 @@ const Form = styled.form`
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 90vh;
 `;
 
 const Title = styled.h2`
@@ -160,7 +168,6 @@ const Error = styled.span`
   display: block;
 `;
 
-
 const LoginLink = styled.div`
   text-align: center;
   margin-top: 1.5rem;
@@ -177,7 +184,6 @@ const LoginLink = styled.div`
     }
   }
 `;
-
 
 const Spinner = styled.div`
   display: inline-block;
