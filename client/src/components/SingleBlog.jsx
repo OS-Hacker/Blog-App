@@ -91,9 +91,11 @@ const SingleBlog = () => {
 };
 
 export default SingleBlog;
+
 const BlogContainer = styled.article`
   max-width: 740px;
   margin: 0 auto;
+  background-color: black;
   padding: 0 1.5rem 4rem;
   color: #2d3748;
   margin-top: 5rem;

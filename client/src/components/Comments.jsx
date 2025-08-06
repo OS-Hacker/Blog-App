@@ -212,6 +212,7 @@ export default Comments;
 const CommentsContainer = styled.div`
   max-width: 800px;
   margin: 2rem auto;
+  background-color: black;
   padding: 0 1rem;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 `;

@@ -355,6 +355,7 @@ const UpdateBlog = () => {
 const PageContainer = styled.div`
   min-height: 100vh;
   padding: 2rem 0;
+  background-color: black;
 `;
 
 
