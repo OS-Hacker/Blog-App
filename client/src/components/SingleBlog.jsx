@@ -44,58 +44,67 @@ const SingleBlog = () => {
   console.log(blog);
 
   return (
-    <BlogContainer>
-      <BlogHeader>
-        <CategoryTag category={blog.category}>{blog?.category}</CategoryTag>
-        <BlogTitle>{blog.title}</BlogTitle>
-        <BlogExcerpt>
-          {blog.excerpt || "A fascinating read about " + blog.category}
-        </BlogExcerpt>
+    <MeanBlogContainer>
+      <BlogContainer>
+        <BlogHeader>
+          <CategoryTag category={blog.category}>{blog?.category}</CategoryTag>
+          <BlogTitle>{blog.title}</BlogTitle>
+          <BlogExcerpt>
+            {blog.excerpt || "A fascinating read about " + blog.category}
+          </BlogExcerpt>
 
-        <AuthorContainer>
-          <AvatarImage
-            src={
-              blog?.author?.avatar
-                ? `${blog.author.avatar.url}`
-                : "/default-avatar.png"
-            }
-            alt={blog?.author?.userName || "Anonymous"}
-            onError={(e) => {
-              e.target.src = "/default-avatar.png";
-            }}
+          <AuthorContainer>
+            <AvatarImage
+              src={
+                blog?.author?.avatar
+                  ? `${blog.author.avatar.url}`
+                  : "/default-avatar.png"
+              }
+              alt={blog?.author?.userName || "Anonymous"}
+              onError={(e) => {
+                e.target.src = "/default-avatar.png";
+              }}
+            />
+            <AuthorInfo>
+              <AuthorName>
+                {blog?.author?.userName || "Unknown Author"}
+              </AuthorName>
+              <PublishDate>
+                {formatCreatedAt(blog?.createdAt)} ·{" "}
+                {Math.ceil(blog?.content?.length / 1500) || 5} min read
+              </PublishDate>
+            </AuthorInfo>
+          </AuthorContainer>
+        </BlogHeader>
+        <FeaturedImageContainer>
+          <FeaturedImage
+            src={`${blog?.coverImage.url}`}
+            alt={blog?.title}
+            loading="lazy"
           />
-          <AuthorInfo>
-            <AuthorName>
-              {blog?.author?.userName || "Unknown Author"}
-            </AuthorName>
-            <PublishDate>
-              {formatCreatedAt(blog?.createdAt)} ·{" "}
-              {Math.ceil(blog?.content?.length / 1500) || 5} min read
-            </PublishDate>
-          </AuthorInfo>
-        </AuthorContainer>
-      </BlogHeader>
-      <FeaturedImageContainer>
-        <FeaturedImage
-          src={`${blog?.coverImage.url}`}
-          alt={blog?.title}
-          loading="lazy"
-        />
-        {blog?.imageCaption && <ImageCaption>{blog.imageCaption}</ImageCaption>}
-      </FeaturedImageContainer>
-      <BlogContent dangerouslySetInnerHTML={{ __html: blog?.content }} />
-      <Divider />
-      <Comments />
-    </BlogContainer>
+          {blog?.imageCaption && (
+            <ImageCaption>{blog.imageCaption}</ImageCaption>
+          )}
+        </FeaturedImageContainer>
+        <BlogContent dangerouslySetInnerHTML={{ __html: blog?.content }} />
+        <Divider />
+        <Comments />
+      </BlogContainer>
+    </MeanBlogContainer>
   );
 };
 
 export default SingleBlog;
 
+const MeanBlogContainer = styled.div`
+  min-height: 100vh;
+  background-color: black;
+  width: 100%;
+`;
+
 const BlogContainer = styled.article`
   max-width: 740px;
   margin: 0 auto;
-  background-color: black;
   padding: 0 1.5rem 4rem;
   color: #2d3748;
   margin-top: 5rem;
@@ -107,7 +116,6 @@ const BlogContainer = styled.article`
 `;
 
 const BlogHeader = styled.header`
-  background-color: black;
   margin: 3rem 0 2.5rem;
   text-align: center;
 
@@ -120,7 +128,7 @@ const BlogTitle = styled.h1`
   font-size: clamp(2rem, 5vw, 2.75rem);
   margin: 1rem 0 1.5rem;
   line-height: 1.2;
-  font-weight: 800; 
+  font-weight: 800;
   color: #30343d;
   letter-spacing: -0.025em;
   @media (max-width: 768px) {
@@ -184,7 +192,7 @@ const PublishDate = styled.div`
 const CategoryTag = styled.span`
   display: inline-block;
   color: white;
-  margin-top:22px;
+  margin-top: 22px;
   padding: 0.35rem 1rem;
   border-radius: 9999px;
   font-size: 0.875rem;
