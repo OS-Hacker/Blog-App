@@ -107,6 +107,7 @@ const BlogContainer = styled.article`
 `;
 
 const BlogHeader = styled.header`
+  background-color: black;
   margin: 3rem 0 2.5rem;
   text-align: center;
 
@@ -119,7 +120,7 @@ const BlogTitle = styled.h1`
   font-size: clamp(2rem, 5vw, 2.75rem);
   margin: 1rem 0 1.5rem;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 800; 
   color: #30343d;
   letter-spacing: -0.025em;
   @media (max-width: 768px) {
