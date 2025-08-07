@@ -177,7 +177,7 @@ const DashboardContainer = styled.div`
   min-height: 100vh; /* ensures full viewport height */
   padding: 2rem;
   max-width: 1400px;
-  margin: 4rem auto 2rem;
+  /* margin: 4rem auto 2rem; */
   animation: fadeIn 0.6s ease-in-out;
   background-color: black;
 

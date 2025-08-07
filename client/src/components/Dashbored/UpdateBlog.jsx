@@ -330,9 +330,6 @@ const UpdateBlog = () => {
           </FormGroup>
 
           <ButtonGroup>
-            <CancelButton type="button" onClick={() => navigate(-1)}>
-              Cancel
-            </CancelButton>
             <SubmitButton type="submit" disabled={loading}>
               {loading ? (
                 <>
@@ -371,15 +368,6 @@ const FormContainer = styled.div`
   margin: 0px auto;
   border-radius: 30px;
   padding: 2.5rem;
-`;
-
-const CancelButton = styled.button`
-  background: #f1f1f1;
-  color: #2c3e50;
-
-  &:hover {
-    background: #e0e0e0;
-  }
 `;
 
 const RemoveImageButton = styled.button`
