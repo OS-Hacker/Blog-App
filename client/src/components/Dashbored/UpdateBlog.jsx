@@ -68,7 +68,7 @@ const UpdateBlog = () => {
   useEffect(() => {
     const fetchBlogData = async () => {
       try {
-        const { data } = await axios.get(`${baseUrl}/single-blog/${slug}`);
+        const { data } = await axios.get(`${baseUrl}/v1/single-blog/${slug}`);
         setBlogData({
           title: data.title,
           content: data.content,
