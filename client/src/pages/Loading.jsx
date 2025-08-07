@@ -6,6 +6,7 @@ const Loading = () => {
     <div
       style={{
         display: "flex",
+        backgroundColor: "black",
         color: "#ff9800",
         justifyContent: "center",
         alignItems: "center",
