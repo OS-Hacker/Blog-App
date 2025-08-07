@@ -4,21 +4,13 @@ import styled from "styled-components";
 const Settings = () => {
   return (
     <Wrapper>
-      <div className="flex items-center justify-center">
-        <div className="text-center p-8 rounded-lg shadow-md max-w-md w-full">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Settings Page
-          </h1>
-          <div className="flex justify-center">
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 w-full">
-              <p className="font-medium text-gray-800">Work in progress</p>
-              <p className="text-sm mt-1 text-gray-800">
-                This page is currently under development
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Card>
+        <h1>Settings Page</h1>
+        <AlertBox>
+          <p className="title">🚧 Work in progress</p>
+          <p className="message">This page is currently under development.</p>
+        </AlertBox>
+      </Card>
     </Wrapper>
   );
 };
@@ -29,8 +21,53 @@ const Wrapper = styled.section`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 90vh;
-  position: relative;
-  top: 65px;
-  background-color: black;
+  min-height: 100vh;
+  background-color: #000;
+  padding: 1rem;
+`;
+
+const Card = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  color: #fff;
+  transition: transform 0.3s ease;
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.2rem;
+    color: #ffeb3b;
+  }
+
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
+const AlertBox = styled.div`
+  background-color: #fff9c4;
+  border-left: 5px solid #fbc02d;
+  color: #333;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: left;
+
+  .title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: black;
+  }
+
+  .message {
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    color: black;
+  }
 `;
