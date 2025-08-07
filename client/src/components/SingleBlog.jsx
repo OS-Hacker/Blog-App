@@ -14,7 +14,7 @@ const SingleBlog = () => {
   const fetchBlog = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${baseUrl}/single-blog/${slug}`);
+      const res = await axios.get(`${baseUrl}/v1/single-blog/${slug}`);
       setBlog(res.data);
 
       // Increment view count

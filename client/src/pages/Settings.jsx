@@ -10,7 +10,7 @@ const Settings = () => {
             Settings Page
           </h1>
           <div className="flex justify-center">
-            <div className="bg-yellow-100 text-gray-800 border-l-4 border-yellow-500 p-4 w-full">
+            <div className="bg-gray-600 text-gray-800 border-l-4 p-4 w-full">
               <p className="font-medium">Work in progress</p>
               <p className="text-sm mt-1">
                 This page is currently under development

@@ -22,7 +22,7 @@ blogRouter.get("/get-blogs", getBlogsController);
 blogRouter.get("/single-user/blogs", isLoggin, singleUserBlogController);
 
 // get Single Blog
-blogRouter.get("/single-blog/:slug", singleBlogController);
+blogRouter.get("/v1/single-blog/:slug", singleBlogController);
 
 blogRouter.patch("/:slug/view", isLoggin, viewCountController);
 
