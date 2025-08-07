@@ -11,8 +11,8 @@ const Comments = () => {
           </h1>
           <div className="flex justify-center">
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-800 p-4 w-full">
-              <p className="font-medium">Work in progress</p>
-              <p className="text-sm mt-1">
+              <p className="font-medium text-gray-800">Work in progress</p>
+              <p className="text-sm mt-1 text-gray-800">
                 This page is currently under development
               </p>
             </div>
