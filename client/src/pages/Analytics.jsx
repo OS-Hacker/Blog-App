@@ -4,13 +4,13 @@ import styled from "styled-components";
 const Analytics = () => {
   return (
     <Wrapper>
-      <div className="flex items-center justify-center bg-gray-100">
-        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md w-full">
+      <div className="flex items-center justify-center">
+        <div className="text-center p-8 rounded-lg shadow-md max-w-md w-full">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Analytics Page
           </h1>
           <div className="flex justify-center">
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 w-full">
+            <div className="bg-yellow-100 border-l-4  border-yellow-500 text-gray-800 p-4 w-full">
               <p className="font-medium">Work in progress</p>
               <p className="text-sm mt-1">
                 This page is currently under development
