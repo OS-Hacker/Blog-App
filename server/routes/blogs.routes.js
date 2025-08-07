@@ -16,7 +16,7 @@ import { isLoggin } from "../middleware/verifyToken.js";
 const blogRouter = express.Router();
 
 // get all Blogs
-blogRouter.get("/blogs", getBlogsController);
+blogRouter.get("/get-blogs", getBlogsController);
 
 // get All single user Blogs
 blogRouter.get("/single-user/blogs", isLoggin, singleUserBlogController);

@@ -28,7 +28,7 @@ const Blogs = () => {
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${baseUrl}/blogs`);
+      const res = await axios.get(`${baseUrl}/get-blogs`);
       setBlogs(res?.data.blog);
     } catch (error) {
       console.log(error);
