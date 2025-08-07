@@ -174,7 +174,7 @@ const UserDashboard = () => {
 export default UserDashboard;
 
 const DashboardContainer = styled.div`
-  min-height: 100vh; /* ensures full viewport height */
+  min-height: 90vh; /* ensures full viewport height */
   padding: 2rem;
   max-width: 1400px;
   margin-top: 4rem;
