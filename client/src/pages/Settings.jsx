@@ -4,7 +4,7 @@ import styled from "styled-components";
 const Settings = () => {
   return (
     <Wrapper>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="flex items-center justify-center bg-gray-100">
         <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md w-full">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Settings Page
