@@ -107,7 +107,7 @@ const BlogContainer = styled.article`
   margin: 0 auto;
   padding: 0 1.5rem 4rem;
   color: #2d3748;
-  margin-top: 5rem;
+  top: 5rem;
 
   @media (max-width: 768px) {
     padding: 0 1rem 3rem;
