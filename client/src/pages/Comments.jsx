@@ -5,7 +5,7 @@ const Comments = () => {
   return (
     <Wrapper>
       <div className="flex items-center justify-center bg-gray-100">
-        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md w-full">
+        <div className="text-center p-8 rounded-lg shadow-md max-w-md w-full">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Comments Page
           </h1>
