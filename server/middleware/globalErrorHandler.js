@@ -1,17 +1,15 @@
 export const globalErrorHandler = (err, req, res, next) => {
-  err.message = err.message || "internal server Error";
-  err.statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
 
-  res.status(err.statusCode).json({
+  res.status(statusCode).json({
     success: false,
-    message: err.message,
+    message: message,
   });
 };
 
-
-export const notFoundError = (error, req, res, next) => {
+export const notFoundError = (err, req, res, next) => {
   let error = new Error(
     `cannot find the route for ${req.originalUrl} at the server`
   );
 };
-
