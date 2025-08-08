@@ -151,11 +151,6 @@ const Articles = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
