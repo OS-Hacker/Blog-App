@@ -1,8 +1,6 @@
 export class ErrorHandler extends Error {
-  constructor(statusCode, message, isOperational = true) {
+  constructor(statusCode, message) {
     super(message);
     this.statusCode = statusCode;
-    this.isOperational = isOperational;
-    Error.captureStackTrace(this, this.constructor);
   }
 }
