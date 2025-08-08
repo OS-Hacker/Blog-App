@@ -99,9 +99,7 @@ const Signup = () => {
 
         await signup(submitData);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Something went wrong", {
-          position: "top-center",
-        });
+        console.log(error);
       } finally {
         setIsLoading(false); // Set loading to false when done
       }

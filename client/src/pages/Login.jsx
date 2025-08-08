@@ -38,23 +38,20 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async (e) => {
-   e.preventDefault();
-   if (validate()) {
-     setIsLoading(true);
-     try {
-       const { email, password } = formData;
-       await login(email, password);
-     } catch (error) {
-       toast.error(error.response?.data?.message || "Something went wrong", {
-         position: "top-center",
-       });
-     } finally {
-       setIsLoading(false);
-     }
-   }
- };
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      setIsLoading(true);
+      try {
+        const { email, password } = formData;
+        await login(email, password);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
     <FormContainer>
