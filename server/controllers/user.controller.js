@@ -2,22 +2,20 @@ import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { uploadToCloudinary } from "./blog.controller.js";
+import { ErrorHandler } from "../utils/ErrorHandler.js";
 
-export const signUpController = async (req, res) => {
+export const signUpController = async (req, res, next) => {
   try {
     const { userName, email, password } = req.body;
 
     if (!userName || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All Fields Required",
-      });
+      return next(new ErrorHandler(400, "All Fields Required"));
     }
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
+      return next(new ErrorHandler(400, "Email already registered"));
     }
 
     // Upload avatar to Cloudinary
@@ -61,8 +59,7 @@ export const signUpController = async (req, res) => {
         },
       });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
+    next(ErrorHandler(error));
   }
 };
 
@@ -71,11 +68,10 @@ export const loginController = async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) return next(new ErrorHandler(400, "Invalid credentials"));
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch) return next(new ErrorHandler(400, "Invalid credentials"));
 
     const token = jwt.sign({ id: user._id }, "hdhddhdhdhdhdhhhdhdhdhdhdh", {
       expiresIn: "7d",
@@ -101,7 +97,7 @@ export const loginController = async (req, res, next) => {
         },
       });
   } catch (error) {
-    next(error);
+    next(ErrorHandler(error));
   }
 };
 
@@ -119,21 +115,13 @@ export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     console.log(user);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    if (!user) return next(new ErrorHandler(401, "User Not Found"));
+
     res.status(200).json({
       success: true,
       user,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(ErrorHandler(error));
   }
 };

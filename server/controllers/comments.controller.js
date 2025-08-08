@@ -1,5 +1,6 @@
 import { Blog } from "../models/blog.model.js";
 import { Comment } from "../models/comments.model.js";
+import { ErrorHandler } from "../utils/ErrorHandler.js";
 
 // Add comment
 export const addComment = async (req, res, next) => {
@@ -10,15 +11,18 @@ export const addComment = async (req, res, next) => {
 
     // Validate input
     if (!text || typeof text !== "string" || text.trim().length === 0) {
-      return res.status(400).json({
-        error: "Comment text is required and must be a non-empty string",
-      });
+      return next(
+        new ErrorHandler(
+          400,
+          "Comment text is required and must be a non-empty string"
+        )
+      );
     }
 
     // Find the blog post
     const blog = await Blog.findOne({ slug }).select("_id comments");
     if (!blog) {
-      return res.status(404).json({ error: "Blog post not found" });
+      return next(new ErrorHandler(404, "Blog Not Found"));
     }
 
     // Create the comment
@@ -32,7 +36,7 @@ export const addComment = async (req, res, next) => {
     blog.comments.push(comment._id);
 
     //  Correctly increment comments count
-    blog.blogStatus.comments = +1;  // Changed from = +1 to += 1
+    blog.blogStatus.comments = +1; // Changed from = +1 to += 1
 
     await blog.save();
 
@@ -46,9 +50,8 @@ export const addComment = async (req, res, next) => {
       success: true,
       data: populatedComment,
     });
-  } catch (err) {
-    console.error("Error adding comment:", err);
-    next(err);
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
@@ -72,12 +75,8 @@ export const getCommentsByBlog = async (req, res, next) => {
 
     // 1. Find the blog
     const blog = await Blog.findOne({ slug }).select("_id");
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        error: "Blog post not found",
-      });
-    }
+
+    if (!blog) return next(new ErrorHandler(404, "Blog Not Found"));
 
     // 2. Find only top-level comments (parent: null)
     const comments = await Comment.find({
@@ -99,9 +98,8 @@ export const getCommentsByBlog = async (req, res, next) => {
       count: comments.length,
       data: comments,
     });
-  } catch (err) {
-    console.error("Error fetching comments:", err);
-    next(err);
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
@@ -139,13 +137,8 @@ export const addReply = async (req, res) => {
       success: true,
       data: populatedReply,
     });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-
-    console.log(err);
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
@@ -157,22 +150,22 @@ export const updateComment = async (req, res, next) => {
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
-      return res.status(404).json({ error: "Comment not found" });
+      return next(new ErrorHandler(404, "Comment not found"));
     }
 
     // Optional authorization check
     if (comment.user.toString() !== userId) {
-      return res
-        .status(403)
-        .json({ error: "Not authorized to update this comment" });
+      return next(
+        new ErrorHandler(403, "Not authorized to update this comment")
+      );
     }
 
     comment.content = content || comment.content;
     await comment.save();
 
     res.status(200).json({ message: "Comment updated", comment });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
@@ -182,7 +175,7 @@ export const deleteComment = async (req, res, next) => {
     const commentId = req.params.commentId;
     const comment = await Comment.findById(commentId);
 
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
+    if (!comment) return next(new ErrorHandler(404, "Comment not found"));
 
     // Authorization check (optional: req.user.id === comment.user or isAdmin)
     await Comment.findByIdAndDelete(commentId);
@@ -193,15 +186,15 @@ export const deleteComment = async (req, res, next) => {
     });
 
     res.status(200).json({ message: "Comment deleted" });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
 // @desc    Like a comment
 // @route   PUT /api/comments/:id/like
 // @access  Private
-export const likeComment = async (req, res) => {
+export const likeComment = async (req, res, next) => {
   try {
     const commentId = req.params.id;
     const userId = req.user.id;
@@ -245,18 +238,15 @@ export const likeComment = async (req, res) => {
         dislikes: populatedComment.dislikes.length,
       },
     });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
 // @desc    Dislike a comment
 // @route   PUT /api/comments/:id/dislike
 // @access  Private
-export const dislikeComment = async (req, res) => {
+export const dislikeComment = async (req, res, next) => {
   try {
     const commentId = req.params.id;
     const userId = req.user.id;
@@ -300,10 +290,7 @@ export const dislikeComment = async (req, res) => {
         dislikes: populatedComment.dislikes.length,
       },
     });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };

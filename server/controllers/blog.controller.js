@@ -3,6 +3,7 @@ import { Blog } from "../models/blog.model.js";
 import slugify from "slugify";
 import { User } from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import { ErrorHandler } from "../utils/ErrorHandler.js";
 
 // Configure Cloudinary (move this to a config file in production)
 cloudinary.config({
@@ -33,7 +34,7 @@ export const uploadToCloudinary = async (fileBuffer, folder) => {
   });
 };
 
-export const getBlogsController = async (req, res) => {
+export const getBlogsController = async (req, res, next) => {
   try {
     const blog = await Blog.find({})
       .populate({
@@ -43,10 +44,7 @@ export const getBlogsController = async (req, res) => {
       .sort({ createdAt: -1 });
 
     if (!blog) {
-      res.status(404).json({
-        success: false,
-        message: "Blog Not Found",
-      });
+      return next(new ErrorHandler(404, "Blog Not Found"));
     }
 
     res.status(200).json({
@@ -55,14 +53,11 @@ export const getBlogsController = async (req, res) => {
       blog,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
-    });
+    next(ErrorHandler(error));
   }
 };
 
-export const singleUserBlogController = async (req, res) => {
+export const singleUserBlogController = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const blogs = await Blog.find({ author: userId })
@@ -71,10 +66,7 @@ export const singleUserBlogController = async (req, res) => {
       .lean();
 
     if (!blogs || blogs.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No blogs found for this user",
-      });
+      return next(new ErrorHandler(404, "No blogs found for this user"));
     }
 
     const totals = {
@@ -91,12 +83,7 @@ export const singleUserBlogController = async (req, res) => {
       blogs,
     });
   } catch (error) {
-    console.error("Error fetching user blogs:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    next(ErrorHandler(error));
   }
 };
 
@@ -106,11 +93,11 @@ export const createBlogController = async (req, res, next) => {
     const author = req.user.id;
 
     if (!title || !content || !category) {
-      return res.status(400).json({ message: "All fields are required" });
+      return next(new ErrorHandler(400, "All fields are required"));
     }
 
     if (!req.file) {
-      return res.status(400).json({ message: "Cover image is required" });
+      return next(new ErrorHandler(400, "Cover image is required"));
     }
 
     // Upload image to Cloudinary
@@ -139,7 +126,7 @@ export const createBlogController = async (req, res, next) => {
 
     await User.findByIdAndUpdate(author, { $inc: { blogCount: 1 } });
   } catch (error) {
-    next(error);
+    next(ErrorHandler(error));
   }
 };
 
@@ -151,7 +138,7 @@ export const viewCountController = async (req, res) => {
     const blog = await Blog.findOne({ slug });
 
     if (!blog) {
-      return res.status(404).json({ message: "Blog not found" });
+      return next(new ErrorHandler(404, "blogs Not found"));
     }
 
     const hasViewed = blog.views?.some(
@@ -171,8 +158,8 @@ export const viewCountController = async (req, res) => {
     }
 
     res.status(200).json(updatedBlog);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    next(ErrorHandler(error));
   }
 };
 
@@ -185,12 +172,12 @@ export const singleBlogController = async (req, res, next) => {
     });
 
     if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
+      return next(new ErrorHandler(404, "blogs Not found"));
     }
 
     res.status(200).json(blog);
   } catch (error) {
-    next(error);
+    next(ErrorHandler(error));
   }
 };
 
@@ -198,7 +185,7 @@ export const updateblogController = async (req, res, next) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
+      return next(new ErrorHandler(404, "blogs Not found"));
     }
 
     // If new image uploaded
@@ -227,7 +214,7 @@ export const updateblogController = async (req, res, next) => {
 
     res.status(200).json(updatedBlog);
   } catch (error) {
-    next(error);
+    next(ErrorHandler(error));
   }
 };
 
@@ -237,7 +224,7 @@ export const deleteBlogController = async (req, res, next) => {
     const blog = await Blog.findById(blogId);
 
     if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
+      return next(new ErrorHandler(404, "blogs Not found"));
     }
 
     // Delete cover image from Cloudinary if it exists
@@ -248,8 +235,7 @@ export const deleteBlogController = async (req, res, next) => {
     await Blog.findByIdAndDelete(blogId);
     res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {
-    console.error("Error deleting blog:", error);
-    next(error);
+    next(ErrorHandler(error));
   }
 };
 
@@ -260,7 +246,7 @@ export const likeBlogController = async (req, res, next) => {
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
+      return next(new ErrorHandler(404, "blogs Not found"));
     }
 
     const isAlreadyLiked = blog.likes.some(
@@ -286,6 +272,6 @@ export const likeBlogController = async (req, res, next) => {
         : "Blog liked successfully",
     });
   } catch (error) {
-    next(error);
+    next(ErrorHandler(error));
   }
 };

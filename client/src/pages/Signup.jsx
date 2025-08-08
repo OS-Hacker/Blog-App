@@ -4,7 +4,13 @@ import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 
-export const baseUrl = "https://blog-app-ssrg.onrender.com";
+const deployment = false
+
+export const baseUrl = deployment
+  ? "https://blog-app-ssrg.onrender.com"
+  : "http://localhost:8080";
+
+  console.log(baseUrl);
 
 const Signup = () => {
   const { auth, signup } = useAuth();
