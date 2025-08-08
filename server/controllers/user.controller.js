@@ -68,10 +68,14 @@ export const loginController = async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return next(new ErrorHandler(400, "Invalid credentials"));
+    if (!user) {
+      return next(new ErrorHandler(400, "Invalid credentials"));
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return next(new ErrorHandler(400, "Invalid credentials"));
+    if (!isMatch) {
+      return next(new ErrorHandler(400, "Invalid credentials"));
+    }
 
     const token = jwt.sign({ id: user._id }, "hdhddhdhdhdhdhhhdhdhdhdhdh", {
       expiresIn: "7d",

@@ -1,7 +1,8 @@
-export const ErrorHandler = (statusCode, message) => {
-  let error = new Error();
-  error.statusCode = statusCode;
-  error.message = message;
-  return error;
-};
-
+export class ErrorHandler extends Error {
+  constructor(statusCode, message, isOperational = true) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = isOperational;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
