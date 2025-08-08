@@ -44,7 +44,7 @@ export const getBlogsController = async (req, res, next) => {
       .sort({ createdAt: -1 });
 
     if (!blog) {
-      return next(new ErrorHandler(404, "Blog Not Found"));
+      return next(new ErrorHandler("Blog Not Found", 404));
     }
 
     res.status(200).json({
@@ -66,7 +66,7 @@ export const singleUserBlogController = async (req, res, next) => {
       .lean();
 
     if (!blogs || blogs.length === 0) {
-      return next(new ErrorHandler(404, "No blogs found for this user"));
+      return next(new ErrorHandler("No blogs found for this user", 404));
     }
 
     const totals = {
@@ -93,11 +93,11 @@ export const createBlogController = async (req, res, next) => {
     const author = req.user.id;
 
     if (!title || !content || !category) {
-      return next(new ErrorHandler(400, "All fields are required"));
+      return next(new ErrorHandler("All fields are required", 400));
     }
 
     if (!req.file) {
-      return next(new ErrorHandler(400, "Cover image is required"));
+      return next(new ErrorHandler("Cover image is required", 400));
     }
 
     // Upload image to Cloudinary
@@ -138,7 +138,7 @@ export const viewCountController = async (req, res) => {
     const blog = await Blog.findOne({ slug });
 
     if (!blog) {
-      return next(new ErrorHandler(404, "blogs Not found"));
+      return next(new ErrorHandler("blogs Not found", 404));
     }
 
     const hasViewed = blog.views?.some(
@@ -172,7 +172,7 @@ export const singleBlogController = async (req, res, next) => {
     });
 
     if (!blog) {
-      return next(new ErrorHandler(404, "blogs Not found"));
+      return next(new ErrorHandler("blogs Not found", 404));
     }
 
     res.status(200).json(blog);
@@ -185,7 +185,7 @@ export const updateblogController = async (req, res, next) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
-      return next(new ErrorHandler(404, "blogs Not found"));
+      return next(new ErrorHandler("blogs Not found", 404));
     }
 
     // If new image uploaded
@@ -224,7 +224,7 @@ export const deleteBlogController = async (req, res, next) => {
     const blog = await Blog.findById(blogId);
 
     if (!blog) {
-      return next(new ErrorHandler(404, "blogs Not found"));
+      return next(new ErrorHandler("blogs Not found", 404));
     }
 
     // Delete cover image from Cloudinary if it exists
@@ -246,7 +246,7 @@ export const likeBlogController = async (req, res, next) => {
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
-      return next(new ErrorHandler(404, "blogs Not found"));
+      return next(new ErrorHandler("blogs Not found", 404));
     }
 
     const isAlreadyLiked = blog.likes.some(

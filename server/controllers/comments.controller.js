@@ -76,7 +76,7 @@ export const getCommentsByBlog = async (req, res, next) => {
     // 1. Find the blog
     const blog = await Blog.findOne({ slug }).select("_id");
 
-    if (!blog) return next(new ErrorHandler(404, "Blog Not Found"));
+    if (!blog) return next(new ErrorHandler("Blog Not Found", 404));
 
     // 2. Find only top-level comments (parent: null)
     const comments = await Comment.find({
@@ -150,13 +150,13 @@ export const updateComment = async (req, res, next) => {
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
-      return next(new ErrorHandler(404, "Comment not found"));
+      return next(new ErrorHandler("Comment not found", 404));
     }
 
     // Optional authorization check
     if (comment.user.toString() !== userId) {
       return next(
-        new ErrorHandler(403, "Not authorized to update this comment")
+        new ErrorHandler("Not authorized to update this comment", 403)
       );
     }
 
@@ -175,7 +175,7 @@ export const deleteComment = async (req, res, next) => {
     const commentId = req.params.commentId;
     const comment = await Comment.findById(commentId);
 
-    if (!comment) return next(new ErrorHandler(404, "Comment not found"));
+    if (!comment) return next(new ErrorHandler("Comment not found", 404));
 
     // Authorization check (optional: req.user.id === comment.user or isAdmin)
     await Comment.findByIdAndDelete(commentId);

@@ -9,13 +9,13 @@ export const signUpController = async (req, res, next) => {
     const { userName, email, password } = req.body;
 
     if (!userName || !email || !password) {
-      return next(new ErrorHandler(400, "All Fields Required"));
+      return next(new ErrorHandler("All Fields Required", 400));
     }
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return next(new ErrorHandler(400, "Email already registered"));
+      return next(new ErrorHandler("Email already registered", 400));
     }
 
     // Upload avatar to Cloudinary
@@ -69,12 +69,12 @@ export const loginController = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return next(new ErrorHandler(400, "Invalid credentials"));
+      return next(new ErrorHandler("Invalid credentials", 400));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return next(new ErrorHandler(400, "Invalid credentials"));
+      return next(new ErrorHandler("Invalid credentials", 400));
     }
 
     const token = jwt.sign({ id: user._id }, "hdhddhdhdhdhdhhhdhdhdhdhdh", {
@@ -119,7 +119,7 @@ export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     console.log(user);
-    if (!user) return next(new ErrorHandler(401, "User Not Found"));
+    if (!user) return next(new ErrorHandler("User Not Found", 401));
 
     res.status(200).json({
       success: true,
