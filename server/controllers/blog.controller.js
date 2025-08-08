@@ -100,6 +100,10 @@ export const createBlogController = async (req, res, next) => {
       return next(new ErrorHandler("Cover image is required", 400));
     }
 
+    if (content.split(" ").length < 200) {
+      return next(new ErrorHandler("Content must be at least 200 words", 400));
+    }
+
     // Upload image to Cloudinary
     const result = await uploadToCloudinary(req.file.buffer, "blog-covers");
 

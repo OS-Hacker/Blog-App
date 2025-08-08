@@ -279,7 +279,7 @@ const Articles = () => {
                 style={{ height: "300px" }}
               />
             </EditorContainer>
-            {errors.content && <ErrorText>{errors.content}</ErrorText>}
+            {errors.content && <ErrorTextN>{errors.content}</ErrorTextN>}
           </FormGroup>
 
           <SubmitButton type="submit" disabled={isSubmitting}>
@@ -509,12 +509,21 @@ const CharCount = styled.span`
   background-color: #151414 !important;
 `;
 
+
 const ErrorText = styled.span`
+color: #e74c3c;
+font-size: 0.85rem;
+margin-top: -0.2rem;
+background-color: #151414 !important;
+`;
+
+const ErrorTextN = styled.span`
   color: #e74c3c;
   font-size: 0.85rem;
-  margin-top: -0.2rem;
+  margin-top: -2rem;
   background-color: #151414 !important;
 `;
+
 
 const SubmitButton = styled.button`
   width: 100%;
