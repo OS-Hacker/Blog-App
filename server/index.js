@@ -8,7 +8,7 @@ import path from "path";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
-import { globalErrorHandler, notFoundError } from "./middleware/globalErrorHandler.js";
+import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -46,8 +46,6 @@ app.use(userRouter);
 app.use(blogRouter);
 app.use(commentRouter);
 
-// route not found error
-app.use(notFoundError)
 
 // global error handler
 app.use(globalErrorHandler)
