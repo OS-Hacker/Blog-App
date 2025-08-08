@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthProvider";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 const Login = () => {

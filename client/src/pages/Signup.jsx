@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import { toast } from "react-toastify";
 
 export const baseUrl = "https://blog-app-ssrg.onrender.com";
 
