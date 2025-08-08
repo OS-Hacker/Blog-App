@@ -183,7 +183,10 @@ const Articles = () => {
       setPreview(null);
     } catch (error) {
       console.error("Error creating blog:", error);
-      toast.error("Failed to create blog. Please try again.");
+      toast.error(
+        error.response?.data?.message,
+        "Failed to create blog. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -279,7 +282,6 @@ const Articles = () => {
                 style={{ height: "300px" }}
               />
             </EditorContainer>
-            {errors.content && <ErrorTextN>{errors.content}</ErrorTextN>}
           </FormGroup>
 
           <SubmitButton type="submit" disabled={isSubmitting}>
@@ -509,21 +511,12 @@ const CharCount = styled.span`
   background-color: #151414 !important;
 `;
 
-
 const ErrorText = styled.span`
-color: #e74c3c;
-font-size: 0.85rem;
-margin-top: -0.2rem;
-background-color: #151414 !important;
-`;
-
-const ErrorTextN = styled.span`
   color: #e74c3c;
   font-size: 0.85rem;
-  margin-top: -2rem;
+  margin-top: -0.2rem;
   background-color: #151414 !important;
 `;
-
 
 const SubmitButton = styled.button`
   width: 100%;
