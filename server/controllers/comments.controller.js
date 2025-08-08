@@ -51,7 +51,7 @@ export const addComment = async (req, res, next) => {
       data: populatedComment,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -99,7 +99,7 @@ export const getCommentsByBlog = async (req, res, next) => {
       data: comments,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -138,7 +138,7 @@ export const addReply = async (req, res) => {
       data: populatedReply,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -165,7 +165,7 @@ export const updateComment = async (req, res, next) => {
 
     res.status(200).json({ message: "Comment updated", comment });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -187,7 +187,7 @@ export const deleteComment = async (req, res, next) => {
 
     res.status(200).json({ message: "Comment deleted" });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -239,7 +239,7 @@ export const likeComment = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -291,6 +291,6 @@ export const dislikeComment = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };

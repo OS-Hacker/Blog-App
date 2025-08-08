@@ -53,7 +53,7 @@ export const getBlogsController = async (req, res, next) => {
       blog,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -83,7 +83,7 @@ export const singleUserBlogController = async (req, res, next) => {
       blogs,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -126,7 +126,7 @@ export const createBlogController = async (req, res, next) => {
 
     await User.findByIdAndUpdate(author, { $inc: { blogCount: 1 } });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -159,7 +159,7 @@ export const viewCountController = async (req, res) => {
 
     res.status(200).json(updatedBlog);
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -177,7 +177,7 @@ export const singleBlogController = async (req, res, next) => {
 
     res.status(200).json(blog);
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -214,7 +214,7 @@ export const updateblogController = async (req, res, next) => {
 
     res.status(200).json(updatedBlog);
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -235,7 +235,7 @@ export const deleteBlogController = async (req, res, next) => {
     await Blog.findByIdAndDelete(blogId);
     res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -272,6 +272,6 @@ export const likeBlogController = async (req, res, next) => {
         : "Blog liked successfully",
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };

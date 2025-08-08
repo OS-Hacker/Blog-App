@@ -59,7 +59,7 @@ export const signUpController = async (req, res, next) => {
         },
       });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -101,7 +101,7 @@ export const loginController = async (req, res, next) => {
         },
       });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };
 
@@ -126,6 +126,6 @@ export const getCurrentUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    next(ErrorHandler(error));
+    next(new ErrorHandler(error));
   }
 };

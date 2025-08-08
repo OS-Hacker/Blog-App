@@ -4,7 +4,6 @@ import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 
-
 export const baseUrl = "https://blog-app-ssrg.onrender.com";
 
 const Signup = () => {
@@ -99,8 +98,9 @@ const Signup = () => {
 
         await signup(submitData);
       } catch (error) {
-        console.error("Signup error:", error);
-        // You might want to set errors here if the API returns validation errors
+        toast.error(error.response?.data?.message || "Something went wrong", {
+          position: "top-center",
+        });
       } finally {
         setIsLoading(false); // Set loading to false when done
       }
