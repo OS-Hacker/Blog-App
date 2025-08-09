@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useState,
+  useMemo,
 } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ import { baseUrl } from "../pages/Signup";
 import { toast } from "react-toastify";
 import Loading from "../pages/Loading";
 
+// Set axios defaults once (moved outside component)
 axios.defaults.withCredentials = true;
 
 const AuthContext = createContext();
@@ -21,10 +23,9 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const checkAuth = useCallback(async () => {
+    setLoading(true);
     try {
-      const { data } = await axios.get(`${baseUrl}/auth/current-user`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(`${baseUrl}/auth/current-user`);
       setAuth(data.success ? data.user : null);
     } catch (err) {
       setAuth(null);
@@ -32,65 +33,70 @@ const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [setAuth, setLoading, baseUrl]); // ✅ All dependencies listed
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]); // Now stable, runs only once
+  }, [checkAuth]);
 
-  const signup = async (submitData) => {
+  const handleAuthAction = async (
+    action,
+    data,
+    successMessage,
+    redirectPath = "/"
+  ) => {
     try {
-      await axios.post(`${baseUrl}/signup`, submitData);
+      await axios.post(`${baseUrl}/${action}`, data);
       await checkAuth();
-      toast("Registration successful!", { position: "top-center" });
-      navigate("/");
+      toast.success(successMessage, { position: "top-center" });
+      navigate(redirectPath);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed", {
-        position: "top-center",
-      });
-      console.log(err);
-      throw err;
-    }
-  };
-
-  const login = async (email, password) => {
-    try {
-      await axios.post(`${baseUrl}/login`, { email, password });
-      await checkAuth();
-      toast("Login successful!", { position: "top-center" });
-      navigate("/");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed", {
+      toast.error(err.response?.data?.message || `${action} failed`, {
         position: "top-center",
       });
       throw err;
     }
   };
 
-  const logout = async () => {
+  const signup = useCallback(
+    (submitData) =>
+      handleAuthAction("signup", submitData, "Registration successful!"),
+    [handleAuthAction]
+  );
+
+  const login = useCallback(
+    (email, password) =>
+      handleAuthAction("login", { email, password }, "Login successful!"),
+    [handleAuthAction]
+  );
+
+  const logout = useCallback(async () => {
     try {
       await axios.post(`${baseUrl}/logout`);
       setAuth(null);
-      toast("Logged out successfully", { position: "top-center" });
+      toast.success("Logged out successfully", { position: "top-center" });
       navigate("/login");
     } catch (err) {
       toast.error("Logout failed", { position: "top-center" });
-      console.error(err);
+      console.error("Logout error:", err);
     }
-  };
+  }, [navigate]);
+
+  const contextValue = useMemo(
+    () => ({
+      auth,
+      loading,
+      signup,
+      login,
+      logout,
+      isAuthenticated: !!auth,
+      checkAuth,
+    }),
+    [auth, loading, signup, login, logout, checkAuth]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        auth,
-        loading,
-        signup,
-        login,
-        logout,
-        isAuthenticated: !!auth,
-        checkAuth,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {loading ? <Loading /> : children}
     </AuthContext.Provider>
   );
@@ -98,4 +104,10 @@ const AuthProvider = ({ children }) => {
 
 export default AuthProvider;
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
