@@ -36,7 +36,7 @@ export const addComment = async (req, res, next) => {
     blog.comments.push(comment._id);
 
     //  Correctly increment comments count
-    blog.blogStatus.comments = +1; // Changed from = +1 to += 1
+    blog.blogStatus.comments = +1;
 
     await blog.save();
 
@@ -56,6 +56,7 @@ export const addComment = async (req, res, next) => {
 };
 
 // Recursive function to get nested replies
+// it is not use in it
 async function getNestedComments(comment) {
   const replies = await Comment.find({ parentComment: comment._id })
     .populate("author", "userName avatar")
@@ -146,24 +147,30 @@ export const addReply = async (req, res) => {
 export const updateComment = async (req, res, next) => {
   try {
     const commentId = req.params.commentId;
-    const { content, userId } = req.body;
+    const { content } = req.body;
 
     const comment = await Comment.findById(commentId);
+
+    // check commet exist or not
     if (!comment) {
       return next(new ErrorHandler("Comment not found", 404));
     }
 
     // Optional authorization check
-    if (comment.user.toString() !== userId) {
+    if (comment.user.toString() !== req?.user?.id) {
       return next(
         new ErrorHandler("Not authorized to update this comment", 403)
       );
     }
 
-    comment.content = content || comment.content;
-    await comment.save();
+    // update content
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, content, {
+      new: true,
+    });
 
-    res.status(200).json({ message: "Comment updated", comment });
+    res
+      .status(200)
+      .json({ message: "Comment updated", comment: updatedComment });
   } catch (error) {
     next(new ErrorHandler(error));
   }

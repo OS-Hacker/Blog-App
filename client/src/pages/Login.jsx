@@ -2,7 +2,6 @@ import { useAuth } from "../context/AuthProvider";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import styled from "styled-components";
 
 const Login = () => {
   const { auth, login } = useAuth();
@@ -13,13 +12,12 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // remove error while fill input
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -45,7 +43,9 @@ const Login = () => {
       try {
         const { email, password } = formData;
         await login(email, password);
+        // toast.success("Login successful!");
       } catch (error) {
+        // toast.error(error.response?.data?.message || "Login failed");
         console.log(error);
       } finally {
         setIsLoading(false);
@@ -54,176 +54,111 @@ const Login = () => {
   };
 
   return (
-    <FormContainer>
-      <Form onSubmit={handleSubmit}>
-        <Title>Login</Title>
-        <FormGroup>
-          <Label htmlFor="email">Email</Label>
-          <Input
+    <div className="flex justify-center items-center min-h-[93vh] font-sans p-4 mt-12">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm sm:p-10 p-10 bg-[#1e1e1e] rounded-lg shadow-lg"
+      >
+        <h1 className="text-orange-500 text-center mb-6 text-2xl font-semibold">
+          Login
+        </h1>
+
+        {location.state?.registrationSuccess && (
+          <div className="text-green-500 bg-green-500/10 p-3 rounded-md mb-6 text-center text-sm">
+            Registration successful! Please login.
+          </div>
+        )}
+
+        {/* Email */}
+        <div className="mb-6">
+          <label
+            htmlFor="email"
+            className="block mb-1 font-medium text-gray-300 text-sm"
+          >
+            Email
+          </label>
+          <input
             type="email"
             id="email"
             name="email"
-            placeholder="Enter your email"
+            autoComplete="off"
             value={formData.email}
             onChange={handleChange}
-            $hasError={!!errors.email}
+            placeholder="Enter your email"
+            disabled={isLoading}
+            className={`w-full p-2 rounded-md text-sm md:text-base bg-[#2d2d2d] text-white border ${
+              errors.email ? "border-red-500" : "border-[#333]"
+            } placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-2 ${
+              errors.email ? "focus:ring-red-300" : "focus:ring-orange-300"
+            } disabled:bg-[#3d3d3d] disabled:cursor-not-allowed`}
           />
-          {errors.email && <Error>{errors.email}</Error>}
-        </FormGroup>
+          {errors.email && (
+            <span className="text-red-500 text-xs mt-1 block">
+              {errors.email}
+            </span>
+          )}
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="password">Password</Label>
-          <Input
+        {/* Password */}
+        <div className="mb-6">
+          <label
+            htmlFor="password"
+            className="block mb-1 font-medium text-gray-300 text-sm"
+          >
+            Password
+          </label>
+          <input
             type="password"
             id="password"
-            placeholder="Enter your password"
             name="password"
+            autoComplete="off"
             value={formData.password}
             onChange={handleChange}
-            $hasError={!!errors.password}
+            placeholder="Enter your password"
+            disabled={isLoading}
+            className={`w-full p-2 rounded-md text-sm md:text-base bg-[#2d2d2d] text-white border ${
+              errors.password ? "border-red-500" : "border-[#333]"
+            } placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-2 ${
+              errors.password ? "focus:ring-red-300" : "focus:ring-orange-300"
+            } disabled:bg-[#3d3d3d] disabled:cursor-not-allowed`}
           />
-          {errors.password && <Error>{errors.password}</Error>}
-        </FormGroup>
-
-        <SubmitButton type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Spinner /> Loading...
-            </>
-          ) : (
-            "Login"
+          {errors.password && (
+            <span className="text-red-500 text-xs mt-1 block">
+              {errors.password}
+            </span>
           )}
-        </SubmitButton>
+        </div>
 
-        <LoginLink>
-          Don't have an account? <Link to="/signup">SignUp</Link>
-        </LoginLink>
-      </Form>
-    </FormContainer>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full p-1 bg-orange-500 text-white rounded-md font-medium flex items-center justify-center gap-2 transition-all hover:bg-orange-600 active:scale-[0.98] disabled:bg-orange-300 disabled:cursor-not-allowed"
+        >
+          {isLoading && (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          )}
+          {isLoading ? "Logging in..." : "Login"}
+        </button>
+
+        {/* Signup Link */}
+        <div className="text-center mt-6 text-gray-400 text-sm md:sm">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-orange-500 hover:underline">
+            Sign up
+          </Link>
+        </div>
+
+        {/* Forgot Password */}
+        <Link
+          to="/forgot-password"
+          className="block text-orange-500 mt-1 text-sm text-center hover:underline"
+        >
+          Forgot password?
+        </Link>
+      </form>
+    </div>
   );
 };
 
 export default Login;
-
-// Styled Components
-const FormContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 90vh;
-  position: relative;
-  top: 65px;
-  background-color: black;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 80vh;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #ff9800;
-  font-size: 30px;
-  font-weight: 800;
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 1.2rem;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #555;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid ${(props) => (props.$hasError ? "#ff4d4f" : "#ddd")};
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border 0.3s;
-
-  &:focus {
-    outline: none;
-    border-color: ${(props) => (props.$hasError ? "#ff4d4f" : "#ff9800")};
-    box-shadow: 0 0 0 2px
-      ${(props) =>
-        props.$hasError ? "rgba(255, 77, 79, 0.2)" : "rgba(24, 144, 255, 0.2)"};
-  }
-`;
-
-const Error = styled.span`
-  color: #ff4d4f;
-  font-size: 0.8rem;
-  margin-top: 0.3rem;
-  display: block;
-`;
-
-const LoginLink = styled.div`
-  text-align: center;
-  margin-top: 1.5rem;
-  color: #666;
-  font-size: 0.95rem;
-
-  a {
-    color: #1890ff;
-    text-decoration: none;
-    font-weight: 500;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-const Spinner = styled.div`
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 0.6rem;
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-
-  &:disabled {
-    background: #ffcc80;
-    cursor: not-allowed;
-  }
-`;

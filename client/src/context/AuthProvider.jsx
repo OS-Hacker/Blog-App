@@ -9,9 +9,9 @@ import React, {
 } from "react";
 import axios from "axios"; // HTTP client for making API requests
 import { useNavigate } from "react-router-dom"; // For programmatic navigation
-import { baseUrl } from "../pages/Signup"; // Base URL for API endpoints
 import { toast } from "react-toastify"; // For showing notifications
 import Loading from "../pages/Loading"; // Loading component
+import { baseUrl } from "../pages/Signup";
 
 // Configure axios to include credentials (cookies) with all requests
 axios.defaults.withCredentials = true;
