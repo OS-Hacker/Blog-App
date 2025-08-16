@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import styled from "styled-components";
 import axios from "axios";
 import { baseUrl } from "../../pages/Signup";
 import { toast } from "react-toastify";
@@ -27,7 +26,6 @@ const UpdateBlog = () => {
   const [errors, setErrors] = useState({});
   const [blogId, setBlogId] = useState("");
 
-  // Quill editor configuration
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -43,10 +41,6 @@ const UpdateBlog = () => {
         ["link", "image", "video"],
         ["clean"],
       ],
-      imageResize: {
-        parchment: ReactQuill.Quill.import("parchment"),
-        modules: ["Resize", "DisplaySize"],
-      },
     }),
     []
   );
@@ -64,7 +58,6 @@ const UpdateBlog = () => {
     "image",
   ];
 
-  // Fetch single blog data
   useEffect(() => {
     const fetchBlogData = async () => {
       try {
@@ -79,7 +72,6 @@ const UpdateBlog = () => {
         setBlogId(data._id);
       } catch (error) {
         toast.error("Failed to load blog data");
-        console.error(error);
       }
     };
     fetchBlogData();
@@ -94,38 +86,30 @@ const UpdateBlog = () => {
     setBlogData((prev) => ({ ...prev, content: value }));
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
+  const triggerFileInput = () => fileInputRef.current.click();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate image size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        setErrors({
-          ...errors,
-          coverImage: "Image size should be less than 2MB",
-        });
-        return;
-      }
+    if (!file) return;
 
-      // Validate image type
-      if (!file.type.match("image.*")) {
-        setErrors({
-          ...errors,
-          coverImage: "Only image files are allowed",
-        });
-        return;
-      }
-
-      setBlogData((prev) => ({
-        ...prev,
-        image: file,
-        previewImage: URL.createObjectURL(file),
-      }));
-      setErrors({ ...errors, coverImage: "" });
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors({
+        ...errors,
+        coverImage: "Image size should be less than 2MB",
+      });
+      return;
     }
+    if (!file.type.match("image.*")) {
+      setErrors({ ...errors, coverImage: "Only image files are allowed" });
+      return;
+    }
+
+    setBlogData((prev) => ({
+      ...prev,
+      image: file,
+      previewImage: URL.createObjectURL(file),
+    }));
+    setErrors({ ...errors, coverImage: "" });
   };
 
   const removeImage = () => {
@@ -149,9 +133,7 @@ const UpdateBlog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     setLoading(true);
 
     try {
@@ -160,12 +142,9 @@ const UpdateBlog = () => {
       formData.append("content", blogData.content);
       formData.append("category", blogData.category);
 
-      // Only append image if a new one was selected
       if (blogData.image) {
         formData.append("coverImage", blogData.image);
       }
-
-      // If image was removed
       if (!blogData.image && !blogData.previewImage && blogData.existingImage) {
         formData.append("removeImage", "true");
       }
@@ -173,20 +152,13 @@ const UpdateBlog = () => {
       const { data } = await axios.put(
         `${baseUrl}/blog/edit/${blogId}`,
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       toast.success(data.message || "Blog updated successfully");
       navigate("/user-dashboard");
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Failed to update blog";
-      toast.error(errorMessage);
-      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to update blog");
     } finally {
       setLoading(false);
     }
@@ -194,111 +166,130 @@ const UpdateBlog = () => {
 
   const renderImagePreview = () => {
     if (blogData.previewImage) {
-      if (
-        typeof blogData.previewImage === "string" &&
-        blogData.previewImage.startsWith("blob:")
-      ) {
-        return (
-          <>
-            <PreviewImage src={blogData.previewImage} alt="Cover preview" />
-            <RemoveImageButton
-              onClick={(e) => {
-                e.stopPropagation();
-                removeImage();
-              }}
-            >
-              <FaTimes />
-            </RemoveImageButton>
-          </>
-        );
-      }
+      return (
+        <div className="relative w-full h-full">
+          <img
+            src={blogData.previewImage}
+            alt="Cover"
+            className="w-full h-full object-cover rounded"
+          />
+          <button
+            type="button"
+            onClick={removeImage}
+            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full"
+          >
+            <FaTimes />
+          </button>
+        </div>
+      );
     }
 
     if (blogData.existingImage?.url) {
       return (
-        <>
-          <PreviewImage src={blogData.existingImage.url} alt="Cover preview" />
-          <RemoveImageButton
-            onClick={(e) => {
-              e.stopPropagation();
-              removeImage();
-            }}
+        <div className="relative w-full h-full">
+          <img
+            src={blogData.existingImage.url}
+            alt="Cover"
+            className="w-full h-full object-cover rounded"
+          />
+          <button
+            type="button"
+            onClick={removeImage}
+            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full"
           >
             <FaTimes />
-          </RemoveImageButton>
-        </>
+          </button>
+        </div>
       );
     }
 
     return (
-      <ImagePlaceholder>
-        <FaImage size={40} color="#ccc" />
+      <div className="flex flex-col items-center justify-center gap-2 text-gray-400">
+        <FaImage size={40} />
         <span>Click to upload cover image</span>
-      </ImagePlaceholder>
+      </div>
     );
   };
 
   return (
-    <PageContainer>
-      <FormContainer>
-        <FormHeading>Update Blog Post</FormHeading>
-        <FormDescription>
+    <div className="min-h-screen bg-black py-10">
+      <div className="max-w-3xl mx-auto bg-[#1a1a1a] rounded-2xl p-8">
+        <h1 className="text-2xl font-bold text-center text-white mb-2">
+          Update Blog Post
+        </h1>
+        <p className="text-center text-gray-400 mb-6">
           Update your knowledge and ideas with the community
-        </FormDescription>
+        </p>
 
-        <Form onSubmit={handleSubmit}>
-          {/* Cover Image Upload */}
-          <ImageUploadContainer>
-            <ImageUploadLabel>Cover Image</ImageUploadLabel>
-            <ImagePreview
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {/* Image Upload */}
+          <div>
+            <label className="block font-semibold text-gray-200 mb-2">
+              Cover Image
+            </label>
+            <div
               onClick={triggerFileInput}
-              $hasError={!!errors.coverImage}
+              className={`w-full h-52 flex items-center justify-center rounded border-2 border-dashed ${
+                errors.coverImage ? "border-red-500" : "border-gray-500"
+              } cursor-pointer relative overflow-hidden`}
             >
               {renderImagePreview()}
-              <CameraOverlay>
-                <FaCamera size={20} />
+              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-sm flex items-center justify-center gap-2 py-2 opacity-0 hover:opacity-100 transition">
+                <FaCamera />
                 <span>Change Image</span>
-              </CameraOverlay>
-            </ImagePreview>
+              </div>
+            </div>
             <input
               type="file"
               ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/*"
-              style={{ display: "none" }}
+              className="hidden"
             />
-            {errors.coverImage && <ErrorText>{errors.coverImage}</ErrorText>}
-            <ImageHint>
+            {errors.coverImage && (
+              <p className="text-red-500 text-sm mt-1">{errors.coverImage}</p>
+            )}
+            <p className="text-gray-400 text-xs mt-1 text-center">
               Recommended size: 1200x630px, Max 2MB (JPEG, PNG)
-            </ImageHint>
-          </ImageUploadContainer>
+            </p>
+          </div>
 
-          {/* Title Input */}
-          <FormGroup>
-            <Label htmlFor="title">Title *</Label>
-            <Input
+          {/* Title */}
+          <div>
+            <label className="block font-semibold text-gray-200 mb-1">
+              Title *
+            </label>
+            <input
               type="text"
-              id="title"
               name="title"
               value={blogData.title}
               onChange={handleChange}
-              $hasError={!!errors.title}
               placeholder="Enter a catchy title..."
               maxLength="100"
+              className={`w-full p-3 rounded border ${
+                errors.title ? "border-red-500" : "border-gray-300"
+              } focus:outline-none focus:ring-2 focus:ring-orange-500`}
             />
-            <CharCount>{blogData.title.length}/100</CharCount>
-            {errors.title && <ErrorText>{errors.title}</ErrorText>}
-          </FormGroup>
+            <p className="text-gray-400 text-xs text-right mt-1">
+              {blogData.title.length}/100
+            </p>
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title}</p>
+            )}
+          </div>
 
-          {/* Category Select */}
-          <FormGroup>
-            <Label htmlFor="category">Category *</Label>
-            <Select
-              id="category"
+          {/* Category */}
+          <div>
+            <label className="block font-semibold text-gray-200 mb-1">
+              Category *
+            </label>
+            <select
               name="category"
               value={blogData.category}
               onChange={handleChange}
-              $hasError={!!errors.category}
+              className={`w-full p-3 rounded border bg-black text-white ${
+                errors.category ? "border-red-500" : "border-gray-300"
+              } focus:outline-none focus:ring-2 focus:ring-orange-500`}
             >
               <option value="">Select a category</option>
               <option value="technology">Technology</option>
@@ -308,335 +299,45 @@ const UpdateBlog = () => {
               <option value="business">Business</option>
               <option value="health">Health & Wellness</option>
               <option value="education">Education</option>
-            </Select>
-            {errors.category && <ErrorText>{errors.category}</ErrorText>}
-          </FormGroup>
+            </select>
+            {errors.category && (
+              <p className="text-red-500 text-sm">{errors.category}</p>
+            )}
+          </div>
 
-          {/* Content Editor */}
-          <FormGroup>
-            <Label htmlFor="content">Content *</Label>
-            <EditorContainer $hasError={!!errors.content}>
-              <ReactQuill
-                theme="snow"
-                value={blogData.content}
-                onChange={handleContentChange}
-                modules={modules}
-                formats={formats}
-                ref={quillRef}
-                style={{ height: "300px" }}
-              />
-            </EditorContainer>
-            {errors.content && <ErrorText>{errors.content}</ErrorText>}
-          </FormGroup>
+          {/* Content */}
+          <div>
+            <label className="block font-semibold text-gray-200 mb-1">
+              Content *
+            </label>
+            <ReactQuill
+              theme="snow"
+              value={blogData.content}
+              onChange={handleContentChange}
+              modules={modules}
+              formats={formats}
+              ref={quillRef}
+              style={{ height: "300px", background: "white" }}
+            />
+            {errors.content && (
+              <p className="text-red-500 text-sm">{errors.content}</p>
+            )}
+          </div>
 
-          <ButtonGroup>
-            <SubmitButton type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <Spinner />
-                  Updating...
-                </>
-              ) : (
-                "Update Blog"
-              )}
-            </SubmitButton>
-          </ButtonGroup>
-        </Form>
-      </FormContainer>
-    </PageContainer>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-orange-500 text-white font-semibold rounded hover:bg-orange-600 transition flex items-center justify-center gap-2 disabled:bg-gray-400"
+          >
+            {loading && (
+              <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+            )}
+            {loading ? "Updating..." : "Update Blog"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
-
-// Styled Components
-// Styled Components (remain the same as in your original file)
-const PageContainer = styled.div`
-  min-height: 100vh;
-  padding: 2rem 0;
-  background-color: black;
-`;
-
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-`;
-
-const FormContainer = styled.div`
-  max-width: 800px;
-  background: rgba(207, 198, 198, 0.1) !important;
-  margin: 0px auto;
-  border-radius: 30px;
-  padding: 2.5rem;
-`;
-
-const RemoveImageButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(231, 76, 60, 0.8);
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(231, 76, 60, 1);
-    transform: scale(1.1);
-  }
-`;
-
-const FormHeading = styled.h1`
-  font-size: 2rem;
-  color: #2c3e50;
-  background-color: #151414 !important;
-  text-align: center;
-  font-weight: 700;
-  @media (max-width: 768px) {
-    margin-top: 10px;
-  }
-`;
-
-const FormDescription = styled.p`
-  text-align: center;
-  color: #7f8c8d;
-  background-color: #151414 !important;
-  font-size: 1rem;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  background-color: #151414 !important;
-  gap: 1.8rem;
-`;
-
-const ImageUploadContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: #151414 !important;
-  gap: 0.5rem;
-`;
-
-const ImageUploadLabel = styled.label`
-  font-weight: 600;
-  background-color: #151414 !important;
-  font-size: 0.95rem;
-`;
-
-const ImagePreview = styled.div`
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-  border: 2px dashed ${(props) => (props.$hasError ? "#e74c3c" : "#bdc3c7")};
-  transition: all 0.2s ease;
-  background-color: #151414 !important;
-
-  &:hover {
-    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
-  }
-`;
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  background-color: #151414 !important;
-`;
-
-const ImagePlaceholder = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
-  background-color: #151414 !important;
-
-  span {
-    font-size: 0.95rem;
-    background-color: #151414 !important;
-  }
-`;
-
-const CameraOverlay = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #151414 !important;
-  padding: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-
-  ${ImagePreview}:hover & {
-    opacity: 1;
-  }
-`;
-
-const ImageHint = styled.span`
-  font-size: 0.8rem;
-  color: #95a5a6;
-  background-color: #151414 !important;
-  text-align: center;
-  margin-top: 0.3rem;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  background-color: #151414 !important;
-`;
-
-const Label = styled.label`
-  font-weight: 600;
-  color: #34495e;
-  font-size: 0.95rem;
-  background-color: #151414 !important;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
-    box-shadow: 0 0 0 3px
-      ${(props) =>
-        props.$hasError ? "rgba(231, 76, 60, 0.1)" : "rgba(52, 152, 219, 0.1)"};
-  }
-
-  &::placeholder {
-    color: #bdc3c7;
-  }
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
-  border-radius: 6px;
-  font-size: 1rem;
-  background-color: black;
-  transition: all 0.2s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2334495e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.7rem top 50%;
-  background-size: 0.65rem auto;
-
-  &:focus {
-    outline: none;
-    border-color: #ff9800;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-  }
-`;
-
-const EditorContainer = styled.div`
-  .ql-toolbar {
-    border-radius: 6px 6px 0 0;
-    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
-    border-bottom: none;
-  }
-
-  .ql-container {
-    border-radius: 0 0 6px 6px;
-    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
-    font-size: 1rem;
-  }
-
-  .ql-editor {
-    min-height: 200px;
-  }
-`;
-
-const CharCount = styled.span`
-  font-size: 0.8rem;
-  color: #95a5a6;
-  text-align: right;
-  margin-top: -0.3rem;
-  background-color: #151414 !important;
-`;
-
-const ErrorText = styled.span`
-  color: #e74c3c;
-  font-size: 0.85rem;
-  margin-top: -0.2rem;
-  background-color: #151414 !important;
-`;
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 0.5rem;
-  background: #ff9800;
-  z-index: 1223;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 4rem;
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-  }
-  @media (max-width: 768px) {
-    margin-top: 10rem;
-  }
-`;
-
-const Spinner = styled.div`
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 2px solid white;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
 
 export default UpdateBlog;
