@@ -56,9 +56,9 @@ app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 // Deployment setup
 // Production configuration
-// if (process.env.isDeployMode === "PRODUCTION") {
-//   app.use(express.static(path.join(__dirname, "../client/dist")));
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
-//   });
-// }
+if (process.env.isDeployMode === "PRODUCTION") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
