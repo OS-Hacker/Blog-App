@@ -203,6 +203,7 @@ const DataNotAvilable = styled.div`
   font-family: cursive;
   margin-top: 3rem;
   background-color: black;
+  color: white;
 
   h2,
   h3 {
