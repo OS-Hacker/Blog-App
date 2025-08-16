@@ -127,14 +127,14 @@ const Comments = () => {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold  text-white ">
                 {comment.author?.userName || "Anonymous"}
               </span>
               <span className="text-xs text-gray-500">
                 {formatCreatedAt(comment.createdAt)}
               </span>
             </div>
-            <p className="text-gray-700 text-sm mb-2">{comment.text}</p>
+            <p className="text-white  text-sm mb-2">{comment.text}</p>
             <div className="flex gap-4 text-gray-500 text-sm mt-2">
               <button className="flex items-center gap-1 hover:text-orange-500">
                 <FaThumbsUp /> {comment.likes?.length || 0}
@@ -159,7 +159,7 @@ const Comments = () => {
             {replyingTo === comment._id && (
               <div className="flex flex-col gap-2 mt-4 pt-2">
                 <textarea
-                  className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full border text-white  border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Write your reply..."
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}

@@ -4,6 +4,7 @@ import axios from "axios";
 import Comments from "./Comments";
 import { FaUser } from "react-icons/fa";
 import { baseUrl } from "../pages/Signup";
+import Loading from "../pages/Loading";
 
 const SingleBlog = () => {
   const { slug } = useParams();
@@ -35,7 +36,7 @@ const SingleBlog = () => {
     return Math.ceil(words / 200);
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <Loading/>
   if (!blog) return <div className="text-center py-10">Blog not found.</div>;
 
   return (
