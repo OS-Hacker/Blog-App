@@ -40,7 +40,7 @@ const SingleBlog = () => {
 
   return (
     <div className="bg-black min-h-screen flex flex-col items-center">
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-10 mt-10 mb-20">
+      <div className="w-full max-w-5xl bg-black rounded-xl shadow-lg p-6 md:p-10 mt-20 mb-20">
         {/* Cover Image */}
         <img
           src={blog?.coverImage?.url || "/fallback-image.png"}
@@ -70,7 +70,6 @@ const SingleBlog = () => {
             </span>
             <span>{new Date(blog?.createdAt).toLocaleDateString()}</span>
             <span>{getReadingTime(blog?.content)} min read</span>
-            <span>{blog?.views} views</span>
           </div>
         </div>
 
