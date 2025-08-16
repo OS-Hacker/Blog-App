@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from "react";
+import styled from "styled-components";
 import { FaCamera, FaImage } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -7,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
 
+// Register the image resize module
 ReactQuill.Quill.register("modules/imageResize", ImageResize);
 
 const Articles = () => {
@@ -23,6 +25,7 @@ const Articles = () => {
   const fileInputRef = useRef(null);
   const quillRef = useRef(null);
 
+  // Configure Quill modules
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -68,26 +71,34 @@ const Articles = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleContentChange = (content) => {
     setFormData((prev) => ({ ...prev, content }));
-    if (errors.content) setErrors((prev) => ({ ...prev, content: "" }));
+
+    if (errors.content) {
+      setErrors((prev) => ({ ...prev, content: "" }));
+    }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
     if (!file.type.match("image.*")) {
       setErrors((prev) => ({
         ...prev,
-        coverImage: "Please select a valid image (JPEG, PNG)",
+        coverImage: "Please select an image file (JPEG, PNG)",
       }));
       return;
     }
 
+    // Validate file size (2MB max)
     if (file.size > 2 * 1024 * 1024) {
       setErrors((prev) => ({
         ...prev,
@@ -99,24 +110,39 @@ const Articles = () => {
     setFormData((prev) => ({ ...prev, coverImage: file }));
     setErrors((prev) => ({ ...prev, coverImage: "" }));
 
+    // Create preview
     const reader = new FileReader();
-    reader.onloadend = () => setPreview(reader.result);
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
     reader.readAsDataURL(file);
   };
 
-  const triggerFileInput = () => fileInputRef.current.click();
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = "Title is required";
-    else if (formData.title.length > 100)
+
+    // Title validation
+    if (!formData.title.trim()) {
+      newErrors.title = "Title is required";
+    } else if (formData.title.length > 100) {
       newErrors.title = "Title must be 100 characters or less";
+    }
 
-    if (!formData.content.trim()) newErrors.content = "Content is required";
-    else if (formData.content.split(" ").length < 200)
+    // Content validation
+    if (!formData.content.trim()) {
+      newErrors.content = "Content is required";
+    } else if (formData.content.split(" ").length < 200) {
       newErrors.content = "Content must be at least 200 words";
+    }
 
-    if (!formData.coverImage) newErrors.coverImage = "Cover image is required";
+    // Cover image validation (optional based on your requirements)
+    if (!formData.coverImage) {
+      newErrors.coverImage = "Cover image is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -124,7 +150,7 @@ const Articles = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+
     setIsSubmitting(true);
 
     try {
@@ -136,9 +162,13 @@ const Articles = () => {
         formDataToSend.append("coverImage", formData.coverImage);
       }
 
-      await axios.post(`${baseUrl}/blog/create`, formDataToSend);
-      toast.success("Blog created successfully!", { position: "top-center" });
+      // Simulate API call
+      console.log("Form data to submit:", Object.fromEntries(formDataToSend));
 
+      await axios.post(`${baseUrl}/blog/create`, formDataToSend);
+
+      toast.success("Blog created successfully!", { position: "top-center" });
+      // Reset form after successful submission
       setFormData({
         title: "",
         content: "",
@@ -149,7 +179,8 @@ const Articles = () => {
     } catch (error) {
       console.error("Error creating blog:", error);
       toast.error(
-        error.response?.data?.message || "Failed to create blog. Try again."
+        error.response?.data?.message,
+        "Failed to create blog. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -157,100 +188,70 @@ const Articles = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white py-6 px-4 sm:px-6 md:px-8">
-      <div className="max-w-4xl mx-auto bg-[#1a1a1a] rounded-2xl p-6 sm:p-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-orange-400">
-          Create New Blog Post
-        </h1>
-        <p className="text-center text-gray-400 mt-2 hidden sm:block">
+    <PageContainer>
+      <FormContainer>
+        <FormHeading>Create New Blog Post</FormHeading>
+        <FormDescription>
           Share your knowledge and ideas with the community
-        </p>
+        </FormDescription>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-6 mt-6 bg-[#151414]"
-        >
-          {/* Cover Image */}
-          <div className="flex flex-col gap-2">
-            <label className="font-semibold text-gray-300">Cover Image</label>
-            <div
+        <Form onSubmit={handleSubmit}>
+          {/* Cover Image Upload */}
+          <ImageUploadContainer>
+            <ImageUploadLabel>Cover Image</ImageUploadLabel>
+            <ImagePreview
               onClick={triggerFileInput}
-              className={`relative w-full h-40 sm:h-52 md:h-64 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden border-2 border-dashed transition ${
-                errors.coverImage
-                  ? "border-red-500"
-                  : "border-gray-500 hover:border-orange-400"
-              }`}
+              $hasError={!!errors.coverImage}
             >
               {preview ? (
-                <img
-                  src={preview}
-                  alt="Cover preview"
-                  className="w-full h-full object-cover"
-                />
+                <PreviewImage src={preview} alt="Cover preview" />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400 text-sm sm:text-base">
-                  <FaImage size={32} className="sm:size-40" />
+                <ImagePlaceholder>
+                  <FaImage size={40} color="#ccc" />
                   <span>Click to upload cover image</span>
-                </div>
+                </ImagePlaceholder>
               )}
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 py-2 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition text-xs sm:text-sm">
-                <FaCamera size={16} />
+              <CameraOverlay>
+                <FaCamera size={20} />
                 <span>Change Image</span>
-              </div>
-            </div>
+              </CameraOverlay>
+            </ImagePreview>
             <input
               type="file"
               ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/*"
-              className="hidden"
+              style={{ display: "none" }}
             />
-            {errors.coverImage && (
-              <span className="text-sm text-red-500">{errors.coverImage}</span>
-            )}
-            <span className="text-xs text-gray-400 text-center">
-              Recommended size: 1200x630px, Max 2MB
-            </span>
-          </div>
+            {errors.coverImage && <ErrorText>{errors.coverImage}</ErrorText>}
+            <ImageHint>Recommended size: 1200x630px, Max 2MB</ImageHint>
+          </ImageUploadContainer>
 
-          {/* Title */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="title" className="font-semibold text-gray-300">
-              Title *
-            </label>
-            <input
+          {/* Title Input */}
+          <FormGroup>
+            <Label htmlFor="title">Title *</Label>
+            <Input
               type="text"
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
+              $hasError={!!errors.title}
               placeholder="Enter a catchy title..."
               maxLength="100"
-              className={`w-full p-3 rounded-md border transition focus:outline-none text-sm sm:text-base ${
-                errors.title
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-gray-600 focus:border-orange-400"
-              } bg-black text-white placeholder-gray-500`}
             />
-            <span className="text-xs text-gray-400 text-right">
-              {formData.title.length}/100
-            </span>
-            {errors.title && (
-              <span className="text-sm text-red-500">{errors.title}</span>
-            )}
-          </div>
+            <CharCount>{formData.title.length}/100</CharCount>
+            {errors.title && <ErrorText>{errors.title}</ErrorText>}
+          </FormGroup>
 
-          {/* Category */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="category" className="font-semibold text-gray-300">
-              Category *
-            </label>
-            <select
+          {/* Category Select */}
+          <FormGroup>
+            <Label htmlFor="category">Category *</Label>
+            <Select
               id="category"
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full p-3 rounded-md border border-gray-600 bg-black text-white focus:border-orange-400 focus:outline-none text-sm sm:text-base"
             >
               <option value="technology">Technology</option>
               <option value="travel">Travel</option>
@@ -259,19 +260,13 @@ const Articles = () => {
               <option value="business">Business</option>
               <option value="health">Health & Wellness</option>
               <option value="education">Education</option>
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          {/* Content */}
-          <div className="flex flex-col gap-2">
-            <label className="font-semibold text-gray-300">Content *</label>
-            <div
-              className={`rounded-md ${
-                errors.content
-                  ? "border border-red-500"
-                  : "border border-gray-600"
-              }`}
-            >
+          {/* Content Editor */}
+          <FormGroup>
+            <Label htmlFor="content">Content *</Label>
+            <EditorContainer $hasError={!!errors.content}>
               <ReactQuill
                 theme="snow"
                 value={formData.content}
@@ -279,38 +274,291 @@ const Articles = () => {
                 modules={modules}
                 formats={formats}
                 ref={quillRef}
-                style={{ minHeight: "250px" }}
-                className="text-sm sm:text-base"
+                style={{ height: "300px" }}
               />
-            </div>
-            {errors.content && (
-              <span className="text-sm text-red-500">{errors.content}</span>
-            )}
-          </div>
+            </EditorContainer>
+          </FormGroup>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full py-3 rounded-md font-semibold flex items-center justify-center gap-2 transition text-sm sm:text-base ${
-              isSubmitting
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-orange-500 hover:bg-orange-600"
-            }`}
-          >
+          <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <Spinner />
                 Publishing...
               </>
             ) : (
               "Publish Blog"
             )}
-          </button>
-        </form>
-      </div>
-    </div>
+          </SubmitButton>
+        </Form>
+      </FormContainer>
+    </PageContainer>
   );
 };
+
+// Styled Components
+const PageContainer = styled.div`
+  min-height: 100vh;
+  padding: 2rem 0;
+  background-color: black;
+`;
+
+const FormContainer = styled.div`
+  max-width: 800px;
+  background: rgba(207, 198, 198, 0.1) !important;
+  margin: 0px auto;
+  border-radius: 30px;
+  padding: 2.5rem;
+  background-color: black;
+`;
+
+const FormHeading = styled.h1`
+  font-size: 2rem;
+  color: #2c3e50;
+  background-color: #151414 !important;
+  text-align: center;
+  font-weight: 700;
+
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+    margin: 10px;
+  }
+`;
+
+const FormDescription = styled.p`
+  text-align: center;
+  color: #7f8c8d;
+  background-color: #151414 !important;
+  font-size: 1rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  background-color: #151414 !important;
+  gap: 1.8rem;
+`;
+
+const ImageUploadContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #151414 !important;
+  gap: 0.5rem;
+`;
+
+const ImageUploadLabel = styled.label`
+  font-weight: 600;
+  background-color: #151414 !important;
+  font-size: 0.95rem;
+`;
+
+const ImagePreview = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px dashed ${(props) => (props.$hasError ? "#e74c3c" : "#bdc3c7")};
+  transition: all 0.2s ease;
+  background-color: #151414 !important;
+
+  &:hover {
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
+  }
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: #151414 !important;
+`;
+
+const ImagePlaceholder = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #151414 !important;
+
+  span {
+    font-size: 0.95rem;
+    background-color: #151414 !important;
+  }
+`;
+
+const CameraOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #151414 !important;
+  padding: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  /* color: white; */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ${ImagePreview}:hover & {
+    opacity: 1;
+  }
+`;
+
+const ImageHint = styled.span`
+  font-size: 0.8rem;
+  color: #95a5a6;
+  background-color: #151414 !important;
+  text-align: center;
+  margin-top: 0.3rem;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: #151414 !important;
+`;
+
+const Label = styled.label`
+  font-weight: 600;
+  color: #34495e;
+  font-size: 0.95rem;
+  background-color: #151414 !important;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${(props) => (props.$hasError ? "#e74c3c" : "#ff9800")};
+    box-shadow: 0 0 0 3px
+      ${(props) =>
+        props.$hasError ? "rgba(231, 76, 60, 0.1)" : "rgba(52, 152, 219, 0.1)"};
+  }
+
+  &::placeholder {
+    color: #bdc3c7;
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: black;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2334495e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 0.65rem auto;
+
+  &:focus {
+    outline: none;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+`;
+
+const EditorContainer = styled.div`
+  .ql-toolbar {
+    border-radius: 6px 6px 0 0;
+    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+    border-bottom: none;
+  }
+
+  .ql-container {
+    border-radius: 0 0 6px 6px;
+    border: 1px solid ${(props) => (props.$hasError ? "#e74c3c" : "#dfe6e9")};
+    font-size: 1rem;
+  }
+
+  .ql-editor {
+    min-height: 200px;
+  }
+`;
+
+const CharCount = styled.span`
+  font-size: 0.8rem;
+  color: #95a5a6;
+  text-align: right;
+  margin-top: -0.3rem;
+  background-color: #151414 !important;
+`;
+
+const ErrorText = styled.span`
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: -0.2rem;
+  background-color: #151414 !important;
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 0.5rem;
+  background: #ff9800;
+  z-index: 1223;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 4rem;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+  }
+  @media (max-width: 768px) {
+    margin-top: 10rem;
+  }
+`;
+
+const Spinner = styled.div`
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid white;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 export default Articles;

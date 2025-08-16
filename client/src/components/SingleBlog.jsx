@@ -60,7 +60,7 @@ const SingleBlog = () => {
             <span className="flex items-center gap-2">
               {blog?.author?.avatar ? (
                 <img
-                  src={blog.author.avatar}
+                  src={blog?.author?.avatar?.url}
                   alt={blog.author.userName || "Author"}
                   className="w-6 h-6 rounded-full"
                 />

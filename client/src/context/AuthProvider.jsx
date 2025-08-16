@@ -97,8 +97,6 @@ const AuthProvider = ({ children }) => {
       await axios.post(`${baseUrl}/logout`);
       // Clear auth state
       setAuth(null);
-      // Show success notification
-      toast.success("Logged out successfully", { position: "top-center" });
       // Redirect to login page
       navigate("/login");
     } catch (err) {

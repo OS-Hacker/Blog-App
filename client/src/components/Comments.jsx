@@ -205,7 +205,7 @@ const Comments = () => {
       {/* Comment Form */}
       <div className="relative mb-6 flex gap-2">
         <textarea
-          className="flex-1 p-3 border border-gray-300 rounded-md resize-none min-h-[80px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="flex-1 p-3 border text-white border-gray-300 rounded-md resize-none min-h-[80px] focus:outline-none focus:ring-2 focus:ring-orange-400"
           placeholder="Add a comment..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}

@@ -122,7 +122,7 @@ const Blogs = () => {
                           likeBlog(_id);
                         }}
                         className={`flex items-center gap-1 text-sm transition-transform duration-300 hover:scale-110 ${
-                          isLiked ? "text-red-500" : "bg-white"
+                          isLiked ? "text-red-500" : "text-white"
                         }`}
                       >
                         {isLiked ? <FaHeart /> : <FaRegHeart />}
