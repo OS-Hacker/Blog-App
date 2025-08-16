@@ -40,7 +40,7 @@ const SingleBlog = () => {
 
   return (
     <div className="bg-black min-h-screen flex flex-col items-center">
-      <div className="w-full max-w-5xl bg-black rounded-xl shadow-lg p-6 md:p-10 mt-20 mb-20">
+      <div className="w-full max-w-[750px] bg-black rounded-xl shadow-lg p-3 mt-20 mb-20">
         {/* Cover Image */}
         <img
           src={blog?.coverImage?.url || "/fallback-image.png"}
@@ -50,7 +50,7 @@ const SingleBlog = () => {
 
         {/* Blog Header */}
         <div className="mt-6 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-400">
             {blog?.title}
           </h1>
 
@@ -75,7 +75,7 @@ const SingleBlog = () => {
 
         {/* Blog Content */}
         <div
-          className="prose prose-lg max-w-none mt-6 text-gray-800 leading-relaxed"
+          className="prose prose-lg max-w-none mt-6 text-gray-200 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: blog?.content }}
         />
 
