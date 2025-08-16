@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import {
   BarChart2,
   FileText,
@@ -37,7 +36,6 @@ const UserDashboard = () => {
   const totalBlogs = counterData?.blogs;
   const totalComments = counterData?.comments;
 
-  // Sample data - replace with real data from your API
   const stats = [
     {
       title: "Total Articles",
@@ -64,7 +62,6 @@ const UserDashboard = () => {
   // delete blog
   const handleDelete = async (id) => {
     try {
-      // Confirm before deleting
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this blog?"
       );
@@ -85,321 +82,142 @@ const UserDashboard = () => {
 
   // Edit Blog
   const navigate = useNavigate();
-
   const handleEdit = (slug) => {
     navigate(`/edit-blog/${slug}`);
   };
 
   return (
-    <DashboardContainer>
-      <Header>
-        <h1>Dashboard Overview</h1>
-        <p>Welcome back! Here's what's happening with your content.</p>
-      </Header>
+    <div className="min-h-[92vh] max-w-[1400px] mt-16 px-4 md:px-8 bg-black animate-fadeIn">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-800">
+          Dashboard Overview
+        </h1>
+        <p className="text-slate-500 mt-1">
+          Welcome back! Here's what's happening with your content.
+        </p>
+      </div>
 
-      <StatsGrid>
-        {stats.map((stat, index) => (
-          <StatCard key={index}>
-            <StatIcon>{stat.icon}</StatIcon>
-            <StatContent>
-              <h3>{stat.title}</h3>
-              <StatValue>{stat.value || 0}</StatValue>
-            </StatContent>
-          </StatCard>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        {stats.map((stat, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:translate-y-[-4px] transition-all shadow-sm hover:shadow-md"
+          >
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-white">
+              {stat.icon}
+            </div>
+            <div>
+              <h3 className="text-sm text-slate-300">{stat.title}</h3>
+              <p className="text-xl font-bold text-yellow-400">
+                {stat.value || 0}
+              </p>
+            </div>
+          </div>
         ))}
-      </StatsGrid>
+      </div>
 
-      <TableContainer>
+      {/* Blogs Table */}
+      <div className="bg-white/5 rounded-xl p-6 overflow-x-auto">
         {blogs.length > 0 ? (
-          <Table>
+          <table className="w-full min-w-[768px] border-separate border-spacing-0">
             <thead>
-              <TableRow header>
-                <TableHeaderCell>Article Name</TableHeaderCell>
-                <TableHeaderCell>Category</TableHeaderCell>
-                <TableHeaderCell>Likes</TableHeaderCell>
-                <TableHeaderCell>Comments</TableHeaderCell>
-                <TableHeaderCell>Views</TableHeaderCell>
-                <TableHeaderCell>Actions</TableHeaderCell>
-              </TableRow>
+              <tr className="bg-white/10">
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Article Name
+                </th>
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Category
+                </th>
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Likes
+                </th>
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Comments
+                </th>
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Views
+                </th>
+                <th className="text-left p-4 text-yellow-50 border-b border-slate-700 font-semibold">
+                  Actions
+                </th>
+              </tr>
             </thead>
             <tbody>
               {blogs.map((article) => (
-                <TableRow key={article._id}>
-                  <TableCell>{article.title.substring(0, 50)}</TableCell>
-                  <TableCell>
-                    <CategoryTag category={article.category}>
+                <tr key={article._id} className="hover:bg-white/5 transition">
+                  <td className="p-4 text-slate-100">
+                    {article.title.substring(0, 50)}
+                  </td>
+                  <td className="p-4">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded text-white ${
+                        article.category === "technology"
+                          ? "bg-blue-500"
+                          : article.category === "travel"
+                          ? "bg-green-500"
+                          : article.category === "food"
+                          ? "bg-orange-500"
+                          : article.category === "lifestyle"
+                          ? "bg-purple-500"
+                          : article.category === "business"
+                          ? "bg-red-500"
+                          : article.category === "health"
+                          ? "bg-teal-500"
+                          : article.category === "education"
+                          ? "bg-indigo-500"
+                          : "bg-gray-500"
+                      }`}
+                    >
                       {article.category}
-                    </CategoryTag>
-                  </TableCell>
-                  <TableCell>
-                    <StatWithIcon>
-                      <Heart size={16} /> {article?.blogStatus?.likes}
-                    </StatWithIcon>
-                  </TableCell>
-                  <TableCell>
-                    <StatWithIcon>
-                      <MessageSquare size={16} /> {article?.blogStatus.comments}
-                    </StatWithIcon>
-                  </TableCell>
-                  <TableCell>
-                    <StatWithIcon>
-                      <Eye size={16} /> {article?.blogStatus.views}
-                    </StatWithIcon>
-                  </TableCell>
-                  <TableCell>
-                    <ActionButtons>
-                      <EditButton onClick={() => handleEdit(article.slug)}>
+                    </span>
+                  </td>
+                  <td className="p-4 flex items-center gap-2 text-slate-100">
+                    <Heart size={16} className="text-yellow-400" />{" "}
+                    {article?.blogStatus?.likes}
+                  </td>
+                  <td className="p-4 flex items-center gap-2 text-slate-100">
+                    <MessageSquare size={16} className="text-yellow-400" />{" "}
+                    {article?.blogStatus?.comments}
+                  </td>
+                  <td className="p-4 flex items-center gap-2 text-slate-100">
+                    <Eye size={16} className="text-yellow-400" />{" "}
+                    {article?.blogStatus?.views}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(article.slug)}
+                        className="flex items-center px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white transition"
+                      >
                         <Edit size={16} />
-                      </EditButton>
-                      <DeleteButton onClick={() => handleDelete(article._id)}>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(article._id)}
+                        className="flex items-center px-2 py-1 rounded bg-red-500 hover:bg-red-600 text-white transition"
+                      >
                         <Trash2 size={16} />
-                      </DeleteButton>
-                    </ActionButtons>
-                  </TableCell>
-                </TableRow>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         ) : (
-          <DataNotAvilable>
-            <h2>Start sharing your ideas with the world</h2>
-            <h3>Create Your First Blog</h3>
-          </DataNotAvilable>
+          <div className="text-center font-bold mt-12 text-white">
+            <h2 className="bg-white/10 p-2 animate-pulse">
+              Start sharing your ideas with the world
+            </h2>
+            <h3 className="bg-white/10 p-2 animate-pulse mt-2">
+              Create Your First Blog
+            </h3>
+          </div>
         )}
-      </TableContainer>
-    </DashboardContainer>
+      </div>
+    </div>
   );
 };
 
 export default UserDashboard;
-
-const DashboardContainer = styled.div`
-  min-height: 92vh; /* ensures full viewport height */
-  padding: 2rem;
-  max-width: 1400px;
-  margin-top: 4rem;
-  animation: fadeIn 0.6s ease-in-out;
-  background-color: black;
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
-`;
-
-const DataNotAvilable = styled.div`
-  text-align: center;
-  font-weight: 800;
-  font-family: cursive;
-  margin-top: 3rem;
-  background-color: black;
-  color: white;
-
-  h2,
-  h3 {
-    padding: 0.5rem;
-    background: rgba(207, 198, 198, 0.1);
-    animation: pulse 1.5s infinite ease-in-out;
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-  }
-`;
-
-const Header = styled.div`
-  margin-bottom: 2rem;
-  h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #1e293b;
-  }
-
-  p {
-    color: #64748b;
-    font-size: 1rem;
-    margin-top: 0.25rem;
-  }
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-`;
-
-const StatCard = styled.div`
-  background: rgba(207, 198, 198, 0.08);
-  border-radius: 0.75rem;
-  padding: 1.25rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.06);
-  }
-`;
-
-const StatIcon = styled.div`
-  color: white;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StatContent = styled.div`
-  h3 {
-    font-size: 0.9rem;
-    color: #cbd5e1;
-    margin-bottom: 0.2rem;
-  }
-`;
-
-const StatValue = styled.div`
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #facc15;
-`;
-
-const TableContainer = styled.div`
-  background: rgba(207, 198, 198, 0.08);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  overflow-x: auto;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 768px;
-
-  @media (max-width: 768px) {
-    font-size: 0.85rem;
-  }
-`;
-
-const TableRow = styled.tr`
-  transition: background 0.2s ease;
-
-  ${(props) =>
-    props.header
-      ? `background: rgba(207, 198, 198, 0.08);`
-      : `&:hover {
-        background: rgba(255, 255, 255, 0.04);
-      }`}
-`;
-
-const TableHeaderCell = styled.th`
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #fefce8;
-  border-bottom: 1px solid #334155;
-`;
-
-const TableCell = styled.td`
-  padding: 1rem;
-  color: #f1f5f9;
-  border-bottom: 1px solid #334155;
-`;
-
-const CategoryTag = styled.span`
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  border-radius: 0.25rem;
-  background-color: ${({ category }) => {
-    switch (category) {
-      case "technology":
-        return "#3b82f6";
-      case "travel":
-        return "#10b981";
-      case "food":
-        return "#f97316";
-      case "lifestyle":
-        return "#8b5cf6";
-      case "business":
-        return "#ef4444";
-      case "health":
-        return "#14b8a6";
-      case "education":
-        return "#6366f1";
-      default:
-        return "#6b7280";
-    }
-  }};
-`;
-
-const StatWithIcon = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  svg {
-    stroke: #facc15;
-  }
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-`;
-
-const EditButton = styled.button`
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.6rem;
-  border-radius: 0.35rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background 0.3s;
-
-  &:hover {
-    background: #2563eb;
-  }
-`;
-
-const DeleteButton = styled.button`
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.6rem;
-  border-radius: 0.35rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background 0.3s;
-
-  &:hover {
-    background: #dc2626;
-  }
-`;

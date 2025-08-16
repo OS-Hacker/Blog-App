@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Home, User, FileText, BarChart2, Bell, Settings } from "lucide-react";
-import styled from "styled-components";
+import { Home, User, FileText, BarChart2, Settings } from "lucide-react";
 import { useAuth } from "../../context/AuthProvider";
-import { baseUrl } from "../../pages/Signup";
 import { NavLink } from "react-router-dom";
 
 const SideBar = () => {
@@ -27,11 +25,7 @@ const SideBar = () => {
 
   const navItems = [
     { icon: <Home size={20} />, label: "Overview", path: "/user-dashboard" },
-    {
-      icon: <User size={20} />,
-      label: "Articles",
-      path: "/create-articles",
-    },
+    { icon: <User size={20} />, label: "Articles", path: "/create-articles" },
     { icon: <FileText size={20} />, label: "Comments", path: "/comments-page" },
     { icon: <BarChart2 size={20} />, label: "Analytics", path: "/analytics" },
     { icon: <Settings size={20} />, label: "Settings", path: "/settings" },
@@ -40,129 +34,59 @@ const SideBar = () => {
   const { auth } = useAuth();
 
   return (
-    <SideBarContainer $collapsed={collapsed}>
-      <SidebarContent>
+    <div
+      className={`bg-black text-white transition-all duration-300 h-[90vh] fixed top-[70px] 
+        ${collapsed ? "w-[80px]" : "w-[250px]"}`}
+    >
+      <div className="flex flex-col h-full p-4">
+        {/* Nav Links */}
         <div>
           {navItems.map((item) => (
-            <StyledNavLink
+            <NavLink
               key={item.label}
-              $active={activeItem === item.label}
+              to={item.path}
               onClick={() => {
                 setActiveItem(item.label);
                 if (isMobile) setCollapsed(true);
               }}
-              to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 p-3 mb-2 rounded-lg transition-all relative
+                 ${
+                   activeItem === item.label || isActive
+                     ? "bg-white/15 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-[60%] before:w-[3px] before:rounded-r before:bg-orange-500"
+                     : "hover:bg-white/10"
+                 }`
+              }
             >
               {item.icon}
-              <NavText $collapsed={collapsed}>{item.label}</NavText>
-            </StyledNavLink>
+              {!collapsed && <span>{item.label}</span>}
+            </NavLink>
           ))}
         </div>
 
-        <UserSection $collapsed={collapsed}>
-          <Avatar
-            src={`${auth?.avatar.url}`}
+        {/* User Section */}
+        <div
+          className={`mt-auto pt-4 border-t border-white/10 flex items-center ${
+            collapsed ? "justify-center" : "justify-start"
+          }`}
+        >
+          <img
+            src={auth?.avatar?.url}
             alt={auth?.userName}
-            $collapsed={collapsed}
+            className={`w-10 h-10 rounded-full object-cover ${
+              collapsed ? "mx-auto" : ""
+            }`}
           />
-          <UserInfo $collapsed={collapsed}>
-            <p>{auth?.userName}</p>
-            <p>{auth?.role}</p>
-          </UserInfo>
-        </UserSection>
-      </SidebarContent>
-    </SideBarContainer>
+          {!collapsed && (
+            <div className="ml-3">
+              <p className="font-medium">{auth?.userName}</p>
+              <p className="text-xs opacity-80">{auth?.role}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default SideBar;
-
-const SideBarContainer = styled.div`
-  background-color: black;
-  height: 90vh;
-  position: relative;
-  top: 70px;
-  color: white;
-  transition: width 0.3s ease;
-  width: ${({ $collapsed }) => ($collapsed ? "80px" : "250px")};
-`;
-
-const SidebarContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 1rem;
-`;
-
-const StyledNavLink = styled(NavLink)`
-  display: flex;
-  align-items: center;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  background-color: transparent;
-
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  ${({ $active }) =>
-    $active &&
-    `
-    background: rgba(255, 255, 255, 0.15);
-    position: relative;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 60%;
-      width: 3px;
-      background: #ff9800;
-      border-radius: 0 3px 3px 0;
-    }
-  `}
-`;
-
-const NavText = styled.span`
-  margin-left: 1rem;
-  background-color: none !important;
-  display: ${({ $collapsed }) => ($collapsed ? "none" : "block")};
-`;
-
-const UserSection = styled.div`
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: ${({ $collapsed }) =>
-    $collapsed ? "center" : "flex-start"};
-`;
-
-const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  ${({ $collapsed }) => $collapsed && "margin: 0 auto;"}
-`;
-
-const UserInfo = styled.div`
-  margin-left: 1rem;
-  display: ${({ $collapsed }) => ($collapsed ? "none" : "block")};
-
-  p:first-child {
-    font-weight: 500;
-  }
-
-  p:last-child {
-    font-size: 0.75rem;
-    opacity: 0.8;
-  }
-`;
