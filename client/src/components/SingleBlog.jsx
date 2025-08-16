@@ -30,7 +30,7 @@ const SingleBlog = () => {
   }, [fetchBlog]);
 
   const getReadingTime = (content) => {
-    const text = content?.replace(/<[^>]+>/g, ""); // strip HTML
+    const text = content?.replace(/<[^>]+>/g, ""); // strip HTML tags
     const words = text?.split(/\s+/).length || 0;
     return Math.ceil(words / 200);
   };
@@ -53,10 +53,20 @@ const SingleBlog = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             {blog?.title}
           </h1>
+
+          {/* Blog Meta Info */}
           <div className="flex items-center justify-center gap-4 text-gray-600 text-sm mt-2">
-            <span className="flex items-center gap-1">
-              <FaUser className="text-gray-500" />
-              {blog?.author}
+            <span className="flex items-center gap-2">
+              {blog?.author?.avatar ? (
+                <img
+                  src={blog.author.avatar}
+                  alt={blog.author.userName || "Author"}
+                  className="w-6 h-6 rounded-full"
+                />
+              ) : (
+                <FaUser className="text-gray-500" />
+              )}
+              {blog?.author?.userName || "Unknown Author"}
             </span>
             <span>{new Date(blog?.createdAt).toLocaleDateString()}</span>
             <span>{getReadingTime(blog?.content)} min read</span>

@@ -122,7 +122,7 @@ const Blogs = () => {
                           likeBlog(_id);
                         }}
                         className={`flex items-center gap-1 text-sm transition-transform duration-300 hover:scale-110 ${
-                          isLiked ? "text-red-500" : "text-gray-500"
+                          isLiked ? "text-red-500" : "bg-white"
                         }`}
                       >
                         {isLiked ? <FaHeart /> : <FaRegHeart />}
@@ -133,7 +133,7 @@ const Blogs = () => {
 
                   {/* Title */}
                   <h3 className="text-lg font-semibold text-[#faf4e8] leading-snug">
-                    {title}
+                    {title.replace(/<[^>]*>?/gm, " ").substring(0, 50)}...
                   </h3>
 
                   {/* Excerpt */}

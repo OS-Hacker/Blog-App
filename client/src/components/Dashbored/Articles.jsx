@@ -7,7 +7,6 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
 
-// Register the image resize module
 ReactQuill.Quill.register("modules/imageResize", ImageResize);
 
 const Articles = () => {
@@ -24,7 +23,6 @@ const Articles = () => {
   const fileInputRef = useRef(null);
   const quillRef = useRef(null);
 
-  // Configure Quill modules
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -70,18 +68,12 @@ const Articles = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleContentChange = (content) => {
     setFormData((prev) => ({ ...prev, content }));
-
-    if (errors.content) {
-      setErrors((prev) => ({ ...prev, content: "" }));
-    }
+    if (errors.content) setErrors((prev) => ({ ...prev, content: "" }));
   };
 
   const handleImageChange = (e) => {
@@ -91,7 +83,7 @@ const Articles = () => {
     if (!file.type.match("image.*")) {
       setErrors((prev) => ({
         ...prev,
-        coverImage: "Please select an image file (JPEG, PNG)",
+        coverImage: "Please select a valid image (JPEG, PNG)",
       }));
       return;
     }
@@ -108,34 +100,23 @@ const Articles = () => {
     setErrors((prev) => ({ ...prev, coverImage: "" }));
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-    };
+    reader.onloadend = () => setPreview(reader.result);
     reader.readAsDataURL(file);
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
+  const triggerFileInput = () => fileInputRef.current.click();
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
-    } else if (formData.title.length > 100) {
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    else if (formData.title.length > 100)
       newErrors.title = "Title must be 100 characters or less";
-    }
 
-    if (!formData.content.trim()) {
-      newErrors.content = "Content is required";
-    } else if (formData.content.split(" ").length < 200) {
+    if (!formData.content.trim()) newErrors.content = "Content is required";
+    else if (formData.content.split(" ").length < 200)
       newErrors.content = "Content must be at least 200 words";
-    }
 
-    if (!formData.coverImage) {
-      newErrors.coverImage = "Cover image is required";
-    }
+    if (!formData.coverImage) newErrors.coverImage = "Cover image is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -143,6 +124,7 @@ const Articles = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setIsSubmitting(true);
 
     try {
@@ -155,8 +137,8 @@ const Articles = () => {
       }
 
       await axios.post(`${baseUrl}/blog/create`, formDataToSend);
-
       toast.success("Blog created successfully!", { position: "top-center" });
+
       setFormData({
         title: "",
         content: "",
@@ -167,8 +149,7 @@ const Articles = () => {
     } catch (error) {
       console.error("Error creating blog:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to create blog. Please try again."
+        error.response?.data?.message || "Failed to create blog. Try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -176,25 +157,25 @@ const Articles = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white py-8">
-      <div className="max-w-3xl mx-auto bg-[#1a1a1a] rounded-2xl p-8">
-        <h1 className="text-3xl font-bold text-center text-orange-400">
+    <div className="min-h-screen bg-black text-white py-6 px-4 sm:px-6 md:px-8">
+      <div className="max-w-4xl mx-auto bg-[#1a1a1a] rounded-2xl p-6 sm:p-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-orange-400">
           Create New Blog Post
         </h1>
-        <p className="text-center text-gray-400 mt-2 hidden md:block">
+        <p className="text-center text-gray-400 mt-2 hidden sm:block">
           Share your knowledge and ideas with the community
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-6 mt-8 bg-[#151414]"
+          className="flex flex-col gap-6 mt-6 bg-[#151414]"
         >
-          {/* Cover Image Upload */}
+          {/* Cover Image */}
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-gray-300">Cover Image</label>
             <div
               onClick={triggerFileInput}
-              className={`relative w-full h-52 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden border-2 border-dashed transition ${
+              className={`relative w-full h-40 sm:h-52 md:h-64 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden border-2 border-dashed transition ${
                 errors.coverImage
                   ? "border-red-500"
                   : "border-gray-500 hover:border-orange-400"
@@ -207,14 +188,14 @@ const Articles = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <FaImage size={40} />
+                <div className="flex flex-col items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <FaImage size={32} className="sm:size-40" />
                   <span>Click to upload cover image</span>
                 </div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 py-2 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition">
-                <FaCamera size={18} />
-                <span className="text-sm">Change Image</span>
+              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 py-2 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition text-xs sm:text-sm">
+                <FaCamera size={16} />
+                <span>Change Image</span>
               </div>
             </div>
             <input
@@ -232,7 +213,7 @@ const Articles = () => {
             </span>
           </div>
 
-          {/* Title Input */}
+          {/* Title */}
           <div className="flex flex-col gap-2">
             <label htmlFor="title" className="font-semibold text-gray-300">
               Title *
@@ -245,7 +226,7 @@ const Articles = () => {
               onChange={handleChange}
               placeholder="Enter a catchy title..."
               maxLength="100"
-              className={`w-full p-3 rounded-md border transition focus:outline-none ${
+              className={`w-full p-3 rounded-md border transition focus:outline-none text-sm sm:text-base ${
                 errors.title
                   ? "border-red-500 focus:border-red-500"
                   : "border-gray-600 focus:border-orange-400"
@@ -259,7 +240,7 @@ const Articles = () => {
             )}
           </div>
 
-          {/* Category Select */}
+          {/* Category */}
           <div className="flex flex-col gap-2">
             <label htmlFor="category" className="font-semibold text-gray-300">
               Category *
@@ -269,7 +250,7 @@ const Articles = () => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full p-3 rounded-md border border-gray-600 bg-black text-white focus:border-orange-400 focus:outline-none"
+              className="w-full p-3 rounded-md border border-gray-600 bg-black text-white focus:border-orange-400 focus:outline-none text-sm sm:text-base"
             >
               <option value="technology">Technology</option>
               <option value="travel">Travel</option>
@@ -281,7 +262,7 @@ const Articles = () => {
             </select>
           </div>
 
-          {/* Content Editor */}
+          {/* Content */}
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-gray-300">Content *</label>
             <div
@@ -298,7 +279,8 @@ const Articles = () => {
                 modules={modules}
                 formats={formats}
                 ref={quillRef}
-                style={{ height: "300px" }}
+                style={{ minHeight: "250px" }}
+                className="text-sm sm:text-base"
               />
             </div>
             {errors.content && (
@@ -306,11 +288,11 @@ const Articles = () => {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-3 rounded-md font-semibold flex items-center justify-center gap-2 transition ${
+            className={`w-full py-3 rounded-md font-semibold flex items-center justify-center gap-2 transition text-sm sm:text-base ${
               isSubmitting
                 ? "bg-gray-500 cursor-not-allowed"
                 : "bg-orange-500 hover:bg-orange-600"
