@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { toast } from "react-toastify";
 
-export const baseUrl = "http://localhost:8080";
+export const baseUrl = "https://blog-app-ssrg.onrender.com";
 
 const Signup = () => {
   const { auth, signup } = useAuth();
