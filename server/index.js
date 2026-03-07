@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
-import connectDB from "./db/ConnectDB.js";
+import ConnectDB from "./db/ConnectDB.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -30,7 +30,7 @@ app.use(cors());
 
 // connect database
 // Replace the simple mongoose.connect with this robust version
-connectDB();
+ConnectDB();
 
 // Other middleware
 app.use(express.json());

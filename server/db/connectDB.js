@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectDB = async () => {
+const ConnectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
       // Remove deprecated options
@@ -13,4 +13,4 @@ const connectDB = async () => {
   }
 };
 
-export default connectDB;
+export default ConnectDB;
