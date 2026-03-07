@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
-import ConnectDB from "./db/ConnectDB.js";
+import ConnectDB from "./db/connectDB.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
