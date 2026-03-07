@@ -81,7 +81,7 @@ const AuthProvider = ({ children }) => {
     (submitData) =>
       handleAuthAction("signup", submitData, "Registration successful!"),
     [handleAuthAction] // Only recreate if handleAuthAction changes
-  );
+  ); 
 
   // Login function - wraps handleAuthAction with specific parameters
   const login = useCallback(

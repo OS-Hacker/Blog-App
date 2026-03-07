@@ -104,7 +104,7 @@ const Signup = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-2 mt-5">
-      <div className="w-full max-w-md p-6 bg-[#1e1e1e] rounded-lg shadow-xl overflow-hidden">
+      <div className="w-full max-w-[400px] p-6 bg-[#1e1e1e] rounded-lg shadow-xl overflow-hidden">
         {/* Avatar Upload */}
         <div className="flex flex-col items-center mb-3">
           <div

@@ -220,6 +220,10 @@ const DataNotAvilable = styled.div`
       transform: scale(1.02);
     }
   }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const Header = styled.div`

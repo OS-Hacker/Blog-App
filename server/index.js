@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
+import connectDB from "./db/ConnectDB.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -29,13 +30,7 @@ app.use(cors());
 
 // connect database
 // Replace the simple mongoose.connect with this robust version
-mongoose
-  .connect(process.env.MONGODB_URI, {})
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-    process.exit(1); // Exit process with failure
-  });
+connectDB();
 
 // Other middleware
 app.use(express.json());
@@ -46,9 +41,8 @@ app.use(userRouter);
 app.use(blogRouter);
 app.use(commentRouter);
 
-
 // global error handler
-app.use(globalErrorHandler)
+app.use(globalErrorHandler);
 
 // server running
 const port = process.env.PORT || 5000;
