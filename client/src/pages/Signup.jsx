@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { toast } from "react-toastify";
 
-export const baseUrl = "https://blog-app-ssrg.onrender.com";
+export const baseUrl = "http://localhost:4000";
 
 const Signup = () => {
   const { auth, signup } = useAuth();
@@ -95,7 +95,7 @@ const Signup = () => {
         await signup(submitData);
         // toast.success("Registration successful!");
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
         setIsLoading(false);
       }

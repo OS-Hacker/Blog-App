@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url"; // Add this import
 import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
-import ConnectDB from "./db/connectDB.js";
+import connectDB from "./db/ConnectDB.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -26,11 +26,16 @@ dotenv.config();
 // };
 
 // Apply CORS middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Update this to your frontend URL in production
+    credentials: true, // This is REQUIRED for cookies/auth
+  }),
+);
 
 // connect database
 // Replace the simple mongoose.connect with this robust version
-ConnectDB();
+connectDB();
 
 // Other middleware
 app.use(express.json());
@@ -50,9 +55,9 @@ app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 // Deployment setup
 // Production configuration
-if (process.env.isDeployMode === "PRODUCTION") {
-  app.use(express.static(path.join(__dirname, "../client/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
-  });
-}
+// if (process.env.isDeployMode === "PRODUCTION") {
+//   app.use(express.static(path.join(__dirname, "../client/dist")));
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+//   });
+// }

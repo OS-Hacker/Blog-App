@@ -18,8 +18,15 @@ export const signUpController = async (req, res, next) => {
       return next(new ErrorHandler("Email already registered", 400));
     }
 
-    // Upload avatar to Cloudinary
-    const result = await uploadToCloudinary(req.file.buffer, "user-avatars");
+    // Upload avatar to Cloudinary if provided
+    let avatar = {};
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, "user-avatars");
+      avatar = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,10 +36,7 @@ export const signUpController = async (req, res, next) => {
       userName,
       email,
       password: hashedPassword,
-      avatar: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
+      avatar,
     });
 
     // Create JWT
@@ -51,8 +55,8 @@ export const signUpController = async (req, res, next) => {
       .json({
         message: "User registered successfully",
         user: {
-          id: user._id,
-          name: user.name,
+          _id: user._id,
+          userName: user.userName,
           email: user.email,
           avatar: user.avatar.url, // Send just the URL
           role: user.role,
